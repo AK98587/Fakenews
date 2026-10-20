@@ -705,7 +705,7 @@ def get_html_template(json_payload: str, base_href: str = "./", run_id: str = ""
             <div class="claim-box real-claim">
               <div class="claim-label">
                 <span>Phát biểu sự thật gốc (Ground Truth Claim)</span>
-                <span>Label: 0</span>
+                <span>Label: 1</span>
               </div>
               <div class="claim-text" id="realClaimText">...</div>
             </div>
@@ -754,7 +754,7 @@ def get_html_template(json_payload: str, base_href: str = "./", run_id: str = ""
             <div class="claim-box fake-claim">
               <div class="claim-label">
                 <span>Phát biểu đã bị làm sai lệch (Modified Claim)</span>
-                <span>Label: 1</span>
+                <span>Label: 0</span>
               </div>
               <div class="claim-text" id="fakeClaimText">...</div>
             </div>
@@ -1162,7 +1162,7 @@ def build_human_check_html(dataset_path: str = "outputs/final_dataset/dataset.js
     for r in records:
         sid = r["source_id"]
         grouped.setdefault(sid, {"real": None, "fakes": []})
-        if r["label"] == 0:
+        if r.get("label") == 1 or str(r.get("id", "")).startswith("real_"):
             grouped[sid]["real"] = r
         else:
             grouped[sid]["fakes"].append(r)

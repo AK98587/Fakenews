@@ -215,6 +215,16 @@ class TestFakeNewsPipeline(unittest.TestCase):
         self.assertGreater(summary["fake_samples"], 0)
         self.assertIn("train", summary["splits"])
 
+        # Validate explicit label convention: 1 for Real, 0 for Fake
+        import json
+        with open("outputs/final_dataset/dataset.json", "r", encoding="utf-8") as f:
+            dataset_records = json.load(f)
+        for rec in dataset_records:
+            if rec["id"].startswith("real_"):
+                self.assertEqual(rec["label"], 1, f"Real record {rec['id']} must have label 1")
+            elif rec["id"].startswith("fake_"):
+                self.assertEqual(rec["label"], 0, f"Fake record {rec['id']} must have label 0")
+
 
 if __name__ == "__main__":
     unittest.main()

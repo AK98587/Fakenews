@@ -79,13 +79,13 @@ class DatasetExporter:
             logger.info(f"Saved {len(rejected_records)} rejected records to {rejected_file}")
 
         # 4. Generate statistics summary
-        real_count = sum(1 for s in samples if s.label == 0)
-        fake_count = sum(1 for s in samples if s.label == 1)
+        real_count = sum(1 for s in samples if s.label == 1)
+        fake_count = sum(1 for s in samples if s.label == 0)
         manipulation_counts = Counter(
-            s.metadata.get("manipulation_type", "unknown") for s in samples if s.label == 1
+            s.metadata.get("manipulation_type", "unknown") for s in samples if s.label == 0
         )
         verif_status_counts = Counter(
-            s.metadata.get("verification_status", "unknown") for s in samples if s.label == 1
+            s.metadata.get("verification_status", "unknown") for s in samples if s.label == 0
         )
         rejection_reasons = Counter(
             r.get("reason", "unknown") for r in rejected_records

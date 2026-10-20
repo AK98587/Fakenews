@@ -1,0 +1,21 @@
+{"source_id": "1", "title": "Công tác học sinh, sinh viên – Hợp tác", "reason": "no_valid_image_on_disk", "stage": "text_cleaning"}
+{"source_id": "2", "title": "Hành chính – Quản trị", "reason": "web_navigation_category", "stage": "text_cleaning"}
+{"source_id": "3", "title": "Tuyển sinh Cao đẳng CQ", "reason": "no_valid_image_on_disk", "stage": "text_cleaning"}
+{"source_id": "4", "title": "Điều dưỡng – Kỹ thuật Y học", "reason": "web_navigation_category", "stage": "text_cleaning"}
+{"source_id": "5", "title": "Khảo thí – Kiểm định chất lượng", "reason": "web_navigation_category", "stage": "text_cleaning"}
+{"source_id": "6", "title": "Tuyển sinh Cao đẳng VL-VH", "reason": "no_valid_image_on_disk", "stage": "text_cleaning"}
+{"source_id": "7", "title": "Lễ bàn giao và tiếp nhận công đoàn cơ sở Trường Cao đẳng Y tế từ Công đoàn Ngành Y tế về trực thuộc Công đoàn Viên chức tỉnh Bà Rịa – Vũng Tàu\nChiều ngày 12/8, tại Phòng Truyền thống Trường Cao đẳng Y tế, Công đoàn Ngành Y tế tổ chức Lễ bàn giao Công đoàn cơ sở Trường Cao đẳng Y tế từ Công đoàn ngành Y tế về trực thuộc...", "reason": "no_valid_image_on_disk", "stage": "text_cleaning"}
+{"source_id": "8", "title": "Thông báo tuyển dụng viên chức năm 2024\nNhu cầu tuyển dụng Xem tại đây Mẫu phiếu đăng ký dự xét tuyển Mẫu phiếu Quyết định phê duyệt kế hoạch tuyển dụng Xem tại đây Kế hoạch tuyển dụng Xem tại đây...", "reason": "no_valid_image_on_disk", "stage": "text_cleaning"}
+{"source_id": "9", "title": "24 hình thức lừa đảo diễn ra trên không gian mạng Việt Nam\nLừa đảo trực tuyến là vấn đề đã và đang nhận được nhiều sự quan tâm của toàn xã hội. Các đối tượng xấu lợi dụng bối cảnh bùng nổ công nghệ thông tin để thực hiện nhiều vụ lừa...", "reason": "no_valid_image_on_disk", "stage": "text_cleaning"}
+{"source_id": "10", "title": "BCTech ký kết với FPT Telecom – Học nghề gắn với việc làm, chưa nhập học đã thấy đầu ra", "group": "G2", "reason": "claim_was_not_modified", "stage": "quality_verification"}
+{"source_id": "11", "title": "BCTech tổ chức đánh giá ngoài chất lượng cơ sở giáo dục nghề nghiệp năm 2026", "group": "G2", "reason": "claim_was_not_modified", "stage": "quality_verification"}
+{"source_id": "12", "title": "Tập huấn nâng cao năng lực giảng dạy kỹ năng mềm và giới thiệu khóa học “Kỹ năng thành công”", "group": "G3", "reason": "claim_was_not_modified", "stage": "quality_verification"}
+{"source_id": "14", "title": "Đoàn công tác của Bộ GD&ĐT khảo sát công tác giáo dục quốc phòng và an ninh cho sinh viên tại BCTech", "group": "G2", "reason": "claim_was_not_modified", "stage": "quality_verification"}
+{"source_id": "16", "title": "Bế giảng khoá đào tạo nâng cao kỹ năng nghề do các Nhà đầu tư Lô 06.1 tài trợ 45.000 USD", "group": "G3", "reason": "claim_was_not_modified", "stage": "quality_verification"}
+{"source_id": "18", "title": "BCTech hợp tác cùng VinFast – Tăng tốc đào tạo công nghệ cao", "group": "G2", "reason": "claim_was_not_modified", "stage": "quality_verification"}
+{"source_id": "19", "title": "Lễ gắn kết Nhà trường – Doanh nghiệp và khởi động năm học 2025 – 2026", "group": "G2", "reason": "claim_was_not_modified", "stage": "quality_verification"}
+{"source_id": "19", "title": "Lễ gắn kết Nhà trường – Doanh nghiệp và khởi động năm học 2025 – 2026", "group": "G3", "reason": "claim_was_not_modified", "stage": "quality_verification"}
+{"source_id": "20", "title": "BCTech tiếp nhận tài trợ thiết bị đào tạo tự động hóa công nghiệp từ Siemens và NS Bluescope Việt Nam", "group": "G3", "reason": "claim_was_not_modified", "stage": "quality_verification"}
+{"source_id": "23", "title": "Công ty TNHH Gonzales Việt Nam đến BCTech tuyển dụng sinh viên năm cuối và trao học bổng cho quỹ khuyến học", "group": "G2", "reason": "claim_was_not_modified", "stage": "quality_verification"}
+{"source_id": "23", "title": "Công ty TNHH Gonzales Việt Nam đến BCTech tuyển dụng sinh viên năm cuối và trao học bổng cho quỹ khuyến học", "group": "G3", "reason": "claim_was_not_modified", "stage": "quality_verification"}
+{"source_id": "23", "title": "Công ty TNHH Gonzales Việt Nam đến BCTech tuyển dụng sinh viên năm cuối và trao học bổng cho quỹ khuyến học", "group": "G4", "reason": "claim_was_not_modified", "stage": "quality_verification"}

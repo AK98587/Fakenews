@@ -292,7 +292,7 @@ class FakeNewsPipeline:
                 art.image_paths[0] if art.image_paths else "images/placeholder.jpg"
             )
 
-            # REAL SAMPLE: Add unaltered Good article (Label 0)
+            # REAL SAMPLE: Add unaltered Good article (Label 1)
             if preserve_real:
                 real_id = f"real_{real_counter:06d}"
                 real_counter += 1
@@ -307,7 +307,7 @@ class FakeNewsPipeline:
                         source_id=f"good_{art.id}",
                         image_path=chosen_img_path,
                         text=real_text,
-                        label=0,
+                        label=1,
                         metadata=real_meta.model_dump()
                     )
                 )
@@ -372,7 +372,7 @@ class FakeNewsPipeline:
                         source_id=f"good_{art.id}",
                         image_path=img_path_for_fake,
                         text=manipulation_res.modified_text,
-                        label=1,
+                        label=0,
                         metadata=meta.model_dump()
                     )
                     final_samples.append(sample)

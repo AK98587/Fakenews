@@ -152,7 +152,7 @@ Dữ liệu đầu ra được lưu tại thư mục `outputs/final_dataset/`:
   "source_id": "good_000010",
   "image_path": "real_photo/1787621617_IMG_8856_f.jpg",
   "text": "Nội dung bài báo tiếng Việt sau khi đã được biến đổi sự thật...",
-  "label": 1,
+  "label": 0,
   "metadata": {
     "generation_model": "Qwen2.5-7B-Instruct",
     "generation_method": "controlled_manipulation",
@@ -168,7 +168,7 @@ Dữ liệu đầu ra được lưu tại thư mục `outputs/final_dataset/`:
 }
 ```
 
-Mẫu tin thật (`Real`) được lưu song song với `label: 0`, giữ nguyên vẹn nội dung gốc và hình ảnh tương ứng.
+Mẫu tin thật (`Real`) được lưu song song với `label: 1`, giữ nguyên vẹn nội dung gốc và hình ảnh tương ứng.
 
 ---
 

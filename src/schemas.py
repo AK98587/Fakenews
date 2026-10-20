@@ -137,5 +137,5 @@ class ExportSample(BaseModel):
     source_id: str
     image_path: str
     text: str
-    label: int = Field(description="0 for Real, 1 for Fake")
+    label: int = Field(description="1 for Real, 0 for Fake")
     metadata: Dict[str, Any]
