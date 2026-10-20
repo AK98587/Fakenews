@@ -1,0 +1,99 @@
+# ==============================================================================
+# CẤU HÌNH HỆ THỐNG SINH DỮ LIỆU FAKE NEWS ĐA PHƯƠNG THỨC TỪ TẬP GOOD
+# ==============================================================================
+
+general:
+  seed: 42
+  dry_run: false                   # Chế độ chạy thử không tải trọng số mô hình lớn (mock/rule-based)
+  device: "cuda"                  # "cuda" hoặc "cpu"
+  save_intermediate: true         # Lưu kết quả từng bước vào outputs/intermediate/
+  resume: true                    # Bỏ qua các ID bài báo đã xử lý thành công
+  log_level: "INFO"               # DEBUG, INFO, WARNING, ERROR
+
+data:
+  input_path: "real_data_annotation.csv"   # Đường dẫn file dữ liệu gốc (CSV, JSON, hoặc JSONL)
+  input_format: "csv"                     # "csv", "json", "jsonl"
+  image_base_dir: "."                     # Thư mục gốc chứa ảnh (ví dụ: ./real_photo)
+  
+  # Ánh xạ tên trường (Field Mapping) để linh hoạt với nhiều cấu trúc dữ liệu khác nhau
+  field_mapping:
+    id: "id"
+    title: "title"
+    content: "content"                    # Hoặc "text"
+    image_paths: "image_paths"            # Chuỗi các ảnh phân tách bởi delimiter hoặc danh sách
+    image_delimiter: "|"                  # Ký tự phân tách danh sách ảnh trong CSV (nếu dạng chuỗi)
+    is_duplicate: "is_duplicate"
+    source: "source"
+  
+  # Ràng buộc chống Data Leakage: Chia tập trước theo source_id
+  splits:
+    train: 0.8
+    val: 0.1
+    test: 0.1
+    split_seed: 42
+
+cleaning:
+  min_content_length: 40                  # Độ dài tối thiểu của văn bản (ký tự)
+  min_words: 8                            # Số từ tối thiểu
+  skip_duplicates: true                   # Bỏ qua bài có cờ is_duplicate == 1
+  filter_web_categories: true             # Loại bỏ các tiêu đề danh mục thuần túy (e.g. "Hành chính – Quản trị")
+  preserve_event_titles: true             # Giữ lại các tiêu đề ngắn nhưng chứa sự kiện (có chủ thể + động từ)
+  remove_html_tags: true
+  remove_url_boilerplate: true
+
+claim_extraction:
+  max_claims_per_article: 4               # Số phát biểu tối đa cần trích xuất mỗi bài
+  min_claims_required: 1                  # Bài không trích xuất được phát biểu nào sẽ bị bỏ qua
+  require_evidence: true                  # Bắt buộc phát biểu phải có trích dẫn văn bản gốc
+
+manipulation:
+  # Tỷ lệ sinh các nhóm biến đổi cho mỗi bài Good
+  groups_to_generate: ["G1", "G2", "G3", "G4"]
+  max_fakes_per_good: 2                   # Số biến thể Fake tối đa tạo từ mỗi bài Good
+  preserve_real_sample: true              # Giữ mẫu Real tương ứng để cân bằng tập dữ liệu
+  max_sentence_diff_ratio: 0.4            # Giới hạn tỷ lệ thay đổi câu để tránh làm hỏng cấu trúc bài
+
+verification:
+  nli_threshold: 0.7                      # Ngưỡng mâu thuẫn sự kiện
+  clip_relevance_threshold: 0.20          # Ngưỡng tương đồng ảnh - văn bản tối thiểu
+  max_similarity_duplicate: 0.92          # Loại bỏ mẫu Fake nếu quá giống mẫu Fake khác
+  strict_fact_check: true
+
+models:
+  # Model A - Text Manipulation LLM
+  llm:
+    name: "Qwen/Qwen2.5-7B-Instruct"
+    load_in_4bit: true
+    torch_dtype: "float16"
+    temperature: 0.7
+    top_p: 0.9
+    max_new_tokens: 1024
+    retry_count: 3                        # Số lần thử lại nếu LLM trả JSON sai cấu trúc
+
+  # Model B - Vision-Language Model
+  vlm:
+    name: "google/gemma-3-4b-it"
+    load_in_4bit: true
+    torch_dtype: "float16"
+    max_new_tokens: 256
+
+  # Quản lý bộ nhớ: Chạy tuần tự và giải phóng VRAM giữa LLM và VLM
+  sequential_execution: true
+
+prompts:
+  dir: "prompts"
+  claim_extraction: "claim_extraction.txt"
+  g1_numerical: "g1_numerical.txt"
+  g2_relation: "g2_relation.txt"
+  g3_event: "g3_event.txt"
+  g4_multiclaim: "g4_multiclaim.txt"
+  verification: "verification.txt"
+
+outputs:
+  base_dir: "outputs"
+  intermediate_dir: "outputs/intermediate"
+  generated_dir: "outputs/generated"
+  validated_dir: "outputs/validated"
+  rejected_dir: "outputs/rejected"
+  logs_dir: "outputs/logs"
+  final_dataset_dir: "outputs/final_dataset"

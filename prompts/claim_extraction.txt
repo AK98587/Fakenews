@@ -1,0 +1,40 @@
+Bạn là chuyên gia phân tích tin tức và kiểm chứng sự thật (Fact-Checking Analyst).
+Nhiệm vụ của bạn là trích xuất các phát biểu có thể kiểm chứng được (verifiable claims) từ bài báo tiếng Việt dưới đây.
+
+Mỗi phát biểu phải đại diện cho một sự thật độc lập trong bài báo, tuyệt đối KHÔNG tự bịa hoặc bổ sung thông tin ngoài văn bản.
+Nếu văn bản chỉ là thông báo chung, danh mục hoặc không có sự kiện/số liệu/hành động cụ thể, hãy trả về danh sách claims rỗng.
+
+Mỗi phát biểu cần xác định đầy đủ các trường:
+- subject: Chủ thể thực hiện hoặc đối tượng chính
+- predicate: Hành động, quyết định hoặc mối quan hệ
+- object: Đối tượng nhận hành động hoặc nội dung liên quan
+- time: Thời gian diễn ra sự kiện (nếu có trong bài, nếu không có để null)
+- location: Địa điểm diễn ra (nếu có trong bài, nếu không có để null)
+- quantity: Số liệu, tỷ lệ, số lượng, giá trị tài chính (nếu có trong bài, nếu không có để null)
+- outcome: Kết quả, tác động của sự kiện (nếu có, nếu không có để null)
+- evidence: Đoạn câu văn gốc chính xác trong bài báo hỗ trợ cho phát biểu này
+
+---
+BÀI BÁO ĐẦU VÀO:
+Tiêu đề: {title}
+Nội dung: {content}
+
+---
+Hãy trả về DUY NHẤT một chuỗi JSON hợp lệ theo định dạng sau (không kèm lời chào hay giải thích markdown nào khác ngoài khối json):
+```json
+{
+  "is_viable": true,
+  "claims": [
+    {
+      "subject": "Trường Cao đẳng Kỹ thuật Công nghệ BR-VT",
+      "predicate": "ký kết biên bản hợp tác với",
+      "object": "Công ty Cổ phần Viễn thông FPT (FPT Telecom)",
+      "time": "26/01/2026",
+      "location": "Bà Rịa - Vũng Tàu",
+      "quantity": "100-150 kỹ thuật viên mỗi năm",
+      "outcome": "tạo đầu ra việc làm ổn định cho sinh viên",
+      "evidence": "Ngày 26/01/2026, Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu (BCTech) đã ký kết Biên bản thỏa thuận hợp tác với Công ty Cổ phần Viễn thông FPT (FPT Telecom)..."
+    }
+  ]
+}
+```

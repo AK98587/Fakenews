@@ -1,0 +1,27 @@
+{
+  "total_samples": 44,
+  "real_samples": 15,
+  "fake_samples": 29,
+  "balance_ratio_real_vs_fake": "15:29",
+  "splits": {
+    "train": 35,
+    "val": 3,
+    "test": 6
+  },
+  "manipulation_distribution": {
+    "G1": 12,
+    "G3": 6,
+    "G4": 9,
+    "G2": 2
+  },
+  "verification_status_distribution": {
+    "source_contradiction": 22,
+    "verified_contradiction": 7
+  },
+  "total_rejected": 21,
+  "rejection_reasons": {
+    "no_valid_image_on_disk": 6,
+    "web_navigation_category": 3,
+    "claim_was_not_modified": 12
+  }
+}

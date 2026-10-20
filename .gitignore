@@ -1,0 +1,10 @@
+# User excluded files
+real_photo/
+real_data_annotation.csv
+
+# Python & environment
+__pycache__/
+*.py[cod]
+*$py.class
+*.log
+.ipynb_checkpoints/

@@ -1,0 +1,37 @@
+Bạn là biên tập viên báo chí chuyên nghiệp.
+Nhiệm vụ của bạn là thực hiện biến đổi thông tin nhóm G3 (Event & Outcome Manipulation) trên bài báo gốc để tạo ra biến thể đảo ngược kết quả, trạng thái sự kiện hoặc quyết định chính thức.
+
+YÊU CẦU BẮT BUỘC:
+1. Thay đổi trạng thái sự kiện, kết quả hoạt động, quyết định hoặc kết luận của sự việc.
+   Ví dụ:
+   - "Đã ký kết hợp tác thành công" -> "Tuyên bố hủy bỏ thỏa thuận hợp tác do không đạt đồng thuận"
+   - "Được công nhận là trường đạt chuẩn chất lượng cao" -> "Bị thu hồi quyết định công nhận và buộc khắc phục sai phạm"
+   - "Bàn giao và tiếp nhận công đoàn cơ sở" -> "Tạm hoãn kế hoạch bàn giao công đoàn cơ sở do vướng mắc thủ tục"
+2. Biến đổi phải tạo ra MÂU THUẪN HOÀN TOÀN với nội dung trong bài báo nguồn.
+3. Duy trì văn phong báo chí nghiêm túc, khách quan, tự nhiên của tiếng Việt.
+4. Giữ nguyên các thông tin bối cảnh khác không liên quan.
+5. TUYỆT ĐỐI KHÔNG thêm lời bình luận, cảnh báo hoặc cụm từ như "đây là tin giả" vào trường văn bản bài báo.
+6. Nếu bài báo chỉ là một tiêu đề ngắn, hãy tạo một tiêu đề biến đổi có độ dài tương đương.
+
+---
+BÀI BÁO GỐC:
+Tiêu đề: {title}
+Nội dung: {content}
+
+PHÁT BIỂU CẦN THAY ĐỔI:
+- Phát biểu gốc: {original_claim}
+- Kết quả/Hành động gốc: {target_outcome_or_action}
+- Bằng chứng gốc: {evidence}
+
+---
+Hãy trả về DUY NHẤT một khối JSON hợp lệ:
+```json
+{
+  "manipulation_type": "G3",
+  "original_claim": "{original_claim}",
+  "modified_claim": "Phát biểu sau khi đảo ngược kết quả hoặc trạng thái sự kiện",
+  "modified_title": "Tiêu đề sau khi sửa kết quả sự kiện",
+  "modified_text": "Toàn bộ nội dung bài báo sau khi đảo ngược sự kiện/kết quả",
+  "change_summary": "Tóm tắt ngắn gọn sự kiện/kết quả đã bị đảo ngược như thế nào"
+}
+```

@@ -1,0 +1,42 @@
+Bạn là thẩm định viên kiểm chứng sự thật và chất lượng dữ liệu (Fact-checking & Data Quality Auditor).
+Nhiệm vụ của bạn là kiểm tra xem bài viết được biến đổi có đạt tiêu chuẩn để đưa vào tập dữ liệu huấn luyện phát hiện tin giả hay không.
+
+TIÊU CHÍ ĐÁNH GIÁ:
+1. Factual Contradiction (Mâu thuẫn sự kiện):
+   - Phát biểu mới có thực sự mâu thuẫn hoặc làm sai lệch sự thật so với văn bản gốc hay không?
+   - Nếu phát biểu mới chỉ là diễn giải lại (paraphrase) hoặc giữ nguyên ý nghĩa, thì KHÔNG đạt (rejected).
+2. Text Fluency (Độ tự nhiên):
+   - Văn bản tiếng Việt có trôi chảy, đúng ngữ pháp, mạch lạc, không lặp từ vô nghĩa, không bị cắt ngắn cụt lủn không?
+3. Forbidden Tokens (Dấu hiệu cấm):
+   - Văn bản có chứa các từ cấm như "đây là tin giả", "tin bịa đặt", "lưu ý", "AI đã tạo", hoặc định dạng Markdown/JSON bị rò rỉ vào thân bài không? Nếu có, KHÔNG đạt (rejected).
+4. Phân loại trạng thái (Verification Status):
+   - `verified_contradiction`: Phát biểu mới hoàn toàn trái ngược với bằng chứng hiển ngôn trong bài gốc.
+   - `source_contradiction`: Phát biểu mới sai khác sự thật trong bài gốc nhưng mang tính phủ định gián tiếp.
+   - `synthetic_unverified`: Khó xác định rõ mâu thuẫn trực tiếp.
+   - `rejected`: Văn bản kém chất lượng, vi phạm từ cấm, hoặc không tạo ra mâu thuẫn sự kiện nào.
+
+---
+BÀI BÁO GỐC:
+{original_evidence}
+
+PHÁT BIỂU ĐÃ BIẾN ĐỔI:
+{modified_claim}
+
+TOÀN BỘ VĂN BẢN ĐÃ BIẾN ĐỔI:
+{modified_text}
+
+---
+Hãy trả về DUY NHẤT một khối JSON hợp lệ:
+```json
+{
+  "quality_passed": true,
+  "verification_status": "verified_contradiction",
+  "is_contradicting": true,
+  "is_fluent": true,
+  "has_forbidden_tokens": false,
+  "fluency_score": 0.95,
+  "contradiction_score": 0.90,
+  "rejection_reason": null,
+  "audit_notes": "Phát biểu mới đảo ngược thành công thông tin sự kiện trong nguồn."
+}
+```

@@ -1,0 +1,38 @@
+Bạn là biên tập viên báo chí chuyên nghiệp.
+Nhiệm vụ của bạn là thực hiện biến đổi thông tin nhóm G4 (Multi-attribute Manipulation) trên bài báo gốc để tạo ra một biến thể tin giả hoàn chỉnh mang thông tin sai lệch về ĐỒNG THỜI nhiều thuộc tính (ví dụ: vừa thay đổi thực thể/đối tác, vừa thay đổi số liệu/thời gian trên cùng một phát biểu).
+
+YÊU CẦU BẮT BUỘC:
+1. Chỉ tạo DUY NHẤT một phiên bản văn bản Fake hoàn chỉnh.
+2. TUYỆT ĐỐI KHÔNG nối các phiên bản phát biểu bằng dấu chấm "." hay từ nối "VÀ", "đồng thời" chỉ để liệt kê hai câu lặp nhau. Mọi thay đổi phải được tích hợp tự nhiên, thống nhất vào CÙNG MỘT câu phát biểu và một bài báo hoàn chỉnh.
+3. QUY TẮC THAY TÊN TỔ CHỨC / THỰC THỂ:
+   - Phải thay thế toàn bộ cụm tên tổ chức (bao gồm cả tiền tố loại hình tổ chức cũ nếu cần).
+   - TUYỆT ĐỐI KHÔNG ghép tiền tố cũ vào tên mới gây trùng lặp (ví dụ: KHÔNG được viết "Trường Cao đẳng Trường Đại học Bách Khoa TP.HCM", mà phải thay trọn vẹn thành "Trường Đại học Bách Khoa TP.HCM").
+4. QUY TẮC THAY ĐỔI THỜI GIAN / SỐ LIỆU:
+   - Mốc thời gian mới KHÔNG được vượt quá năm hiện tại (năm 2026).
+   - Chỉ sử dụng mốc thời gian mới tại đúng vị trí tương ứng, không để tồn tại cả mốc thời gian cũ lẫn mới gây mâu thuẫn nội tại trong câu.
+5. Giữ nguyên phong cách báo chí, từ ngữ trang trọng, chuẩn mực tiếng Việt. Giữ nguyên các thông tin bối cảnh khác không liên quan.
+6. TUYỆT ĐỐI KHÔNG chèn thêm từ ngữ giải thích, cảnh báo như "đây là tin giả", "nội dung do AI tạo" vào nội dung bài viết.
+7. Nếu bài báo chỉ là một tiêu đề ngắn, hãy tạo một tiêu đề biến đổi có độ dài tương đương.
+
+---
+BÀI BÁO GỐC:
+Tiêu đề: {title}
+Nội dung: {content}
+
+PHÁT BIỂU MỤC TIÊU CẦN BIẾN ĐỔI ĐỒNG THỜI:
+- Phát biểu gốc: {original_claim}
+- Bằng chứng gốc: {evidence}
+- Các thuộc tính cần biến đổi: {selected_claims_formatted}
+
+---
+Hãy trả về DUY NHẤT một khối JSON hợp lệ:
+```json
+{
+  "manipulation_type": "G4",
+  "original_claim": "{original_claim}",
+  "modified_claim": "Phát biểu duy nhất hoàn chỉnh sau khi đã thay đổi đồng thời các thuộc tính (thực thể + thời gian/số liệu)",
+  "modified_title": "Tiêu đề sau khi sửa (nếu có liên quan) hoặc giữ nguyên",
+  "modified_text": "Toàn bộ nội dung bài báo hoàn chỉnh sau khi đã thay thế đồng thời các thuộc tính, mạch lạc và tự nhiên",
+  "change_summary": "Tóm tắt ngắn gọn các thuộc tính cụ thể đã bị thay đổi đồng thời"
+}
+```

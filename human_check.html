@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <base href="./">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Human Check - So Sánh Bài Gốc & Biến Thể Fake News</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0a0e17;
+      --bg-secondary: #111827;
+      --bg-card: #162032;
+      --bg-card-hover: #1c2942;
+      --border-color: #23324d;
+      --border-focus: #3b82f6;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      
+      --accent-blue: #38bdf8;
+      --accent-cyan: #06b6d4;
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --accent-purple: #a855f7;
+
+      --real-color: #10b981;
+      --fake-color: #f43f5e;
+      --shadow-sm: 0 2px 4px rgba(0,0,0,0.3);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+      --shadow-lg: 0 10px 25px rgba(0,0,0,0.5);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* HEADER & STATS BAR */
+    header {
+      background: linear-gradient(180deg, #131c2e 0%, #0d1524 100%);
+      border-bottom: 1px solid var(--border-color);
+      padding: 16px 28px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #06b6d4, #3b82f6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 20px;
+      color: white;
+      box-shadow: 0 0 15px rgba(6,182,212,0.4);
+    }
+
+    .logo-title h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .logo-title p {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .stats-pills {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .stat-pill {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .stat-pill strong {
+      font-weight: 700;
+      color: var(--accent-blue);
+    }
+
+    .stat-pill.pill-approved strong { color: var(--accent-emerald); }
+    .stat-pill.pill-rejected strong { color: var(--accent-rose); }
+
+    /* CONTROLS BAR */
+    .controls-bar {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .search-box {
+      position: relative;
+      flex: 1;
+      min-width: 260px;
+    }
+
+    .search-box input {
+      width: 100%;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 14px 8px 36px;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      outline: none;
+      transition: border 0.2s;
+    }
+
+    .search-box input:focus {
+      border-color: var(--border-focus);
+    }
+
+    .search-box svg {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      fill: var(--text-dim);
+    }
+
+    .filter-select {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0284c7, #2563eb);
+      color: white;
+    }
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #0369a1, #1d4ed8);
+      transform: translateY(-1px);
+    }
+
+    .btn-success {
+      background: #059669;
+      color: white;
+    }
+    .btn-success:hover { background: #047857; }
+
+    .btn-danger {
+      background: #dc2626;
+      color: white;
+    }
+    .btn-danger:hover { background: #b91c1c; }
+
+    .btn-secondary {
+      background: var(--bg-card);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+    }
+    .btn-secondary:hover {
+      background: var(--bg-card-hover);
+    }
+
+    /* MAIN CONTAINER */
+    main {
+      flex: 1;
+      padding: 24px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      max-width: 1700px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* NAV BAR FOR ARTICLE CAROUSEL */
+    .article-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      padding: 10px 18px;
+      border-radius: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .article-counter {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+    }
+
+    /* ARTICLE CONTAINER */
+    .article-view {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .article-header-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 18px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .header-details h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+
+    .header-tags {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .badge-real { background: rgba(16,185,129,0.18); color: #34d399; border: 1px solid rgba(16,185,129,0.4); }
+    .badge-fake { background: rgba(244,63,94,0.18); color: #fb7185; border: 1px solid rgba(244,63,94,0.4); }
+    .badge-g1 { background: rgba(56,189,248,0.18); color: #38bdf8; border: 1px solid rgba(56,189,248,0.4); }
+    .badge-g2 { background: rgba(168,85,247,0.18); color: #c084fc; border: 1px solid rgba(168,85,247,0.4); }
+    .badge-g3 { background: rgba(245,158,11,0.18); color: #fbbf24; border: 1px solid rgba(245,158,11,0.4); }
+    .badge-g4 { background: rgba(236,72,153,0.18); color: #f472b6; border: 1px solid rgba(236,72,153,0.4); }
+    .badge-split { background: rgba(100,116,139,0.25); color: #cbd5e1; border: 1px solid #475569; }
+    .badge-verified { background: rgba(16,185,129,0.2); color: #10b981; border: 1px solid #10b981; }
+    .badge-source { background: rgba(59,130,246,0.2); color: #60a5fa; border: 1px solid #3b82f6; }
+
+    /* SIDE BY SIDE COMPARISON GRID */
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 1024px) {
+      .comparison-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .column-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-md);
+      transition: border-color 0.2s;
+    }
+
+    .column-card.real-card {
+      border-top: 4px solid var(--real-color);
+    }
+
+    .column-card.fake-card {
+      border-top: 4px solid var(--fake-color);
+    }
+
+    .card-top {
+      padding: 14px 20px;
+      background: rgba(0,0,0,0.2);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-top h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 6px;
+    }
+
+    .tab-btn {
+      padding: 5px 12px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      background: var(--fake-color);
+      color: white;
+      border-color: var(--fake-color);
+    }
+
+    .card-body {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      flex: 1;
+    }
+
+    /* IMAGE SECTION */
+    .image-preview-box {
+      width: 100%;
+      height: 240px;
+      background: #090d14;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .image-preview-box img {
+      max-width: 100%;
+      max-height: 100%;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      cursor: zoom-in;
+      transition: transform 0.2s;
+      display: block;
+    }
+    .image-preview-box img:hover {
+      transform: scale(1.02);
+    }
+
+    .image-placeholder {
+      color: var(--text-dim);
+      font-size: 0.82rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .image-caption {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      background: rgba(0,0,0,0.3);
+      padding: 6px 12px;
+      border-radius: 6px;
+      border-left: 3px solid var(--accent-cyan);
+    }
+
+    /* CLAIMS BOX */
+    .claim-box {
+      background: rgba(0,0,0,0.25);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px 16px;
+    }
+
+    .claim-box.real-claim {
+      border-left: 3px solid var(--real-color);
+    }
+
+    .claim-box.fake-claim {
+      border-left: 3px solid var(--fake-color);
+    }
+
+    .claim-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .real-claim .claim-label { color: var(--real-color); }
+    .fake-claim .claim-label { color: var(--fake-color); }
+
+    .claim-text {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #e2e8f0;
+    }
+
+    .change-summary-box {
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      color: #fde68a;
+    }
+
+    /* ARTICLE TEXT AREA */
+    .article-text-container {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 18px;
+      font-size: 0.92rem;
+      line-height: 1.7;
+      max-height: 380px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* HUMAN CHECK ACTION BAR */
+    .review-action-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 18px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .review-status-label {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .review-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .notes-input {
+      flex: 1;
+      min-width: 250px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      outline: none;
+    }
+
+    /* MODAL FOR IMAGE ZOOM */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.88);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      cursor: zoom-out;
+      backdrop-filter: blur(8px);
+    }
+
+    .modal img {
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 10px;
+      box-shadow: 0 0 35px rgba(0,0,0,0.9);
+      object-fit: contain;
+    }
+
+    /* FOOTER */
+    footer {
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border-color);
+      padding: 16px 28px;
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-top">
+      <div class="logo-area">
+        <div class="logo-icon">FN</div>
+        <div class="logo-title">
+          <h1>Hệ Thống Thẩm Định Dữ Liệu Fake News Đa Phương Thức</h1>
+          <p>Khởi tạo lúc: 20/10/2026 19:16:07 &bull; Mã phiên: 20261020_191607 &bull; <span style="color:var(--accent-emerald);font-weight:600">✓ Sạch 100% từ đầu</span></p>
+        </div>
+      </div>
+      <div class="stats-pills">
+        <div class="stat-pill">Tổng số bài Good: <strong id="stat-total-sources">0</strong></div>
+        <div class="stat-pill">Tổng số mẫu: <strong id="stat-total-samples">0</strong></div>
+        <div class="stat-pill">Mẫu Real: <strong id="stat-real-count" style="color:var(--real-color)">0</strong></div>
+        <div class="stat-pill">Mẫu Fake: <strong id="stat-fake-count" style="color:var(--fake-color)">0</strong></div>
+        <div class="stat-pill pill-approved">Đã duyệt: <strong id="stat-approved">0</strong></div>
+        <div class="stat-pill pill-rejected">Từ chối: <strong id="stat-rejected">0</strong></div>
+      </div>
+    </div>
+
+    <!-- CONTROLS -->
+    <div class="controls-bar">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24"><path d="M10 18a7.952 7.952 0 0 0 4.897-1.688l4.396 4.396 1.414-1.414-4.396-4.396A7.952 7.952 0 0 0 18 10c0-4.411-3.589-8-8-8s-8 3.589-8 8 3.589 8 8 8zm0-14c3.309 0 6 2.691 6 6s-2.691 6-6 6-6-2.691-6-6 2.691-6 6-6z"/></svg>
+        <input type="text" id="searchInput" placeholder="Tìm theo ID bài báo, tiêu đề, hoặc từ khóa nội dung..." oninput="handleSearch()">
+      </div>
+
+      <select id="groupFilter" class="filter-select" onchange="handleFilter()">
+        <option value="ALL">Tất cả nhóm biến đổi (G1 - G4)</option>
+        <option value="G1">G1 - Số liệu & Thời gian</option>
+        <option value="G2">G2 - Thực thể & Đối tác</option>
+        <option value="G3">G3 - Đảo ngược sự kiện</option>
+        <option value="G4">G4 - Đa phát biểu</option>
+      </select>
+
+      <select id="splitFilter" class="filter-select" onchange="handleFilter()">
+        <option value="ALL">Tất cả tập dữ liệu (Train / Val / Test)</option>
+        <option value="train">Tập Train</option>
+        <option value="val">Tập Validation</option>
+        <option value="test">Tập Test</option>
+      </select>
+
+      <select id="statusFilter" class="filter-select" onchange="handleFilter()">
+        <option value="ALL">Tất cả trạng thái duyệt</option>
+        <option value="pending">Chưa thẩm định</option>
+        <option value="approved">Đã phê duyệt (Pass)</option>
+        <option value="rejected">Bị từ chối (Reject)</option>
+      </select>
+
+      <button class="btn btn-primary" onclick="exportReviewReport()">
+        <svg style="width:14px;height:14px;fill:currentColor" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+        Xuất Báo Cáo Kiểm Duyệt
+      </button>
+
+      <button class="btn" style="background:#b45309;color:white" onclick="resetAllReviews()" title="Xóa toàn bộ các đánh giá và bắt đầu lại sạch sẽ">
+        <svg style="width:14px;height:14px;fill:currentColor" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+        Xóa Lịch Sử Duyệt (Reset)
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main>
+    <!-- ARTICLE NAVIGATION -->
+    <div class="article-nav">
+      <div class="nav-buttons">
+        <button class="btn btn-secondary" onclick="prevArticle()">&larr; Bài trước (Phím &larr;)</button>
+        <button class="btn btn-secondary" onclick="nextArticle()">Bài tiếp theo (Phím &rarr;) &rarr;</button>
+      </div>
+      <div class="article-counter">
+        Bài <span id="currentIdx">1</span> / <span id="totalFiltered">1</span>
+        (ID Nguồn: <strong id="currentSourceId">...</strong>)
+      </div>
+      <div class="nav-buttons">
+        <button class="btn btn-secondary" onclick="jumpToRandom()">Ngẫu nhiên</button>
+      </div>
+    </div>
+
+    <!-- ARTICLE VIEW -->
+    <div class="article-view" id="articleViewContainer">
+      <!-- Article Header -->
+      <div class="article-header-card">
+        <div class="header-details">
+          <div class="header-tags" style="margin-bottom:8px">
+            <span class="badge badge-split" id="currentSplitBadge">TRAIN</span>
+            <span class="badge badge-source" id="currentSourceIdBadge">source_id</span>
+            <span class="badge" id="currentReviewBadge" style="background:#334155;color:#e2e8f0">CHƯA DUYỆT</span>
+          </div>
+          <h2 id="currentArticleTitle">Tiêu đề bài báo</h2>
+          <p style="font-size:0.85rem;color:var(--text-muted)" id="currentArticleSubtitle">Đang nạp dữ liệu...</p>
+        </div>
+      </div>
+
+      <!-- Comparison Grid -->
+      <div class="comparison-grid">
+        <!-- REAL COLUMN -->
+        <div class="column-card real-card">
+          <div class="card-top">
+            <h3>
+              <span class="badge badge-real">REAL (TIN THẬT)</span>
+              Mẫu Gốc Chưa Chỉnh Sửa
+            </h3>
+            <span style="font-size:0.75rem;color:var(--text-dim)" id="realSampleId">ID: real_000000</span>
+          </div>
+          <div class="card-body">
+            <!-- Image Box -->
+            <div class="image-preview-box" id="realImageBox">
+              <img id="realImg" src="" alt="Real Image" onclick="openZoom(this.src)" onerror="handleImageError(this)">
+            </div>
+            <div class="image-caption" id="realImageCaption">
+              Mô tả ảnh: Ảnh gốc phản ánh sự kiện thực tế.
+            </div>
+
+            <!-- Original Claim Box -->
+            <div class="claim-box real-claim">
+              <div class="claim-label">
+                <span>Phát biểu sự thật gốc (Ground Truth Claim)</span>
+                <span>Label: 0</span>
+              </div>
+              <div class="claim-text" id="realClaimText">...</div>
+            </div>
+
+            <!-- Original Text -->
+            <div style="font-size:0.8rem;font-weight:600;color:var(--text-muted);text-transform:uppercase">
+              Văn bản bài báo gốc (Good Text):
+            </div>
+            <div class="article-text-container" id="realArticleText">...</div>
+          </div>
+        </div>
+
+        <!-- FAKE COLUMN -->
+        <div class="column-card fake-card">
+          <div class="card-top">
+            <h3>
+              <span class="badge badge-fake">SYNTHETIC FAKE (TIN GIẢ)</span>
+              Biến Thể Biến Đổi Có Kiểm Soát
+            </h3>
+            <div class="tabs" id="fakeTabsContainer">
+              <!-- Tabs for Fake 1, Fake 2 -->
+            </div>
+          </div>
+          <div class="card-body">
+            <!-- Image Box (Reused original image) -->
+            <div class="image-preview-box" id="fakeImageBox">
+              <img id="fakeImg" src="" alt="Fake Image (Original Unaltered)" onclick="openZoom(this.src)" onerror="handleImageError(this)">
+            </div>
+            <div class="image-caption" id="fakeImageCaption">
+              Ảnh gốc không sửa pixel (Multi-modal Fake News).
+            </div>
+
+            <!-- Manipulation Info Badges -->
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+              <span class="badge" id="fakeManipBadge">G1</span>
+              <span class="badge" id="fakeVerifBadge">source_contradiction</span>
+              <span style="font-size:0.75rem;color:var(--text-dim);margin-left:auto" id="fakeSampleId">ID: fake_000000</span>
+            </div>
+
+            <!-- Change Summary -->
+            <div class="change-summary-box" id="fakeChangeSummary">
+              Tóm tắt thay đổi: ...
+            </div>
+
+            <!-- Modified Claim Box -->
+            <div class="claim-box fake-claim">
+              <div class="claim-label">
+                <span>Phát biểu đã bị làm sai lệch (Modified Claim)</span>
+                <span>Label: 1</span>
+              </div>
+              <div class="claim-text" id="fakeClaimText">...</div>
+            </div>
+
+            <!-- Modified Text -->
+            <div style="font-size:0.8rem;font-weight:600;color:var(--text-muted);text-transform:uppercase">
+              Văn bản sau biến đổi (Đã kiểm duyệt mâu thuẫn & ngữ pháp tiếng Việt):
+            </div>
+            <div class="article-text-container" id="fakeArticleText">...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Human Verification Actions -->
+      <div class="review-action-card">
+        <div class="review-status-label">
+          Đánh giá chuyên gia (Human Check):
+        </div>
+        <input type="text" class="notes-input" id="reviewNoteInput" placeholder="Nhập nhận xét / ghi chú kiểm định chất lượng (tùy chọn)..." onchange="saveNote()">
+        <div class="review-buttons">
+          <button class="btn btn-success" onclick="markApproval('approved')">
+            <svg style="width:14px;height:14px;fill:currentColor" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            Phê Duyệt Đạt (Phím 1)
+          </button>
+          <button class="btn btn-danger" onclick="markApproval('rejected')">
+            <svg style="width:14px;height:14px;fill:currentColor" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+            Từ Chối / Lỗi (Phím 2)
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- IMAGE ZOOM MODAL -->
+  <div class="modal" id="zoomModal" onclick="this.style.display='none'">
+    <img id="modalImg" src="">
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div>Hệ Thống Sinh Dữ Liệu Fake News Đa Phương Thức &bull; Tuân thủ cấu trúc doc/plan.md</div>
+    <div>Phím tắt: &larr; Bài trước | &rarr; Bài sau | Phím [1]: Phê duyệt | Phím [2]: Từ chối</div>
+  </footer>
+
+  <script>
+    const rawData = [{"source_id": "good_10", "real": {"id": "real_000001", "source_id": "good_10", "image_path": "real_photo/1787621617_IMG_8856_f.jpg", "text": "BCTech ký kết với FPT Telecom – Học nghề gắn với việc làm, chưa nhập học đã thấy đầu raNgày đăng: 26/01/2026 Ngày 26/01/2026, Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu (BCTech) đã ký kết Biên bản thỏa thuận hợp tác với Công ty Cổ phần Viễn thông FPT (FPT Telecom), nhằm đẩy mạnh liên kết đào tạo và phát triển nguồn nhân lực kỹ thuật. Theo nội dung hợp tác, hai bên sẽ phối hợp triển khai các hoạt động trọng tâm như: tổ chức tham quan, thực tập tại doanh nghiệp; tư vấn hướng nghiệp; tham gia xây dựng và thẩm định chương trình đào tạo; nghiên cứu – chuyển giao công nghệ; cung cấp thông tin nhu cầu nhân lực phục vụ công tác đào tạo và tuyển sinh. Đáng chú ý, trong giai đoạn 2026–2030, FPT Telecom dự kiến tuyển dụng khoảng 100–150 kỹ thuật viên mỗi năm, tạo đầu ra việc làm ổn định cho sinh viên BCTech sau tốt nghiệp. Đây là cơ sở quan trọng để nhà trường đẩy mạnh tuyển sinh các nghề kỹ thuật, công nghệ đào tạo theo nhu cầu thực tế của doanh nghiệp. Việc ký kết hợp tác không chỉ mở rộng cơ hội học tập – thực hành – việc làm cho học sinh, sinh viên, mà còn khẳng định định hướng đào tạo gắn với doanh nghiệp, học đi đôi với làm của BCTech trong giai đoạn mới.", "label": 0, "metadata": {"generation_model": "original_source", "generation_method": "unaltered", "manipulation_type": "none", "original_claim": "Trường Cao đẳng BCTech ký kết theo kế hoạch với Công ty Cổ phần Viễn thông FPT, vào thời gian 2026, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "modified_claim": "", "verification_status": "source_fact", "image_original": true, "quality_passed": true, "split": "val"}}, "fakes": [{"id": "fake_000001", "source_id": "good_10", "image_path": "real_photo/1787621617_IMG_8856_f.jpg", "text": "BCTech ký kết với FPT Telecom – Học nghề gắn với việc làm, chưa nhập học đã thấy đầu raNgày đăng: 26/01/2020 Ngày 26/01/2020, Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu (BCTech) đã ký kết Biên bản thỏa thuận hợp tác với Công ty Cổ phần Viễn thông FPT (FPT Telecom), nhằm đẩy mạnh liên kết đào tạo và phát triển nguồn nhân lực kỹ thuật. Theo nội dung hợp tác, hai bên sẽ phối hợp triển khai các hoạt động trọng tâm như: tổ chức tham quan, thực tập tại doanh nghiệp; tư vấn hướng nghiệp; tham gia xây dựng và thẩm định chương trình đào tạo; nghiên cứu – chuyển giao công nghệ; cung cấp thông tin nhu cầu nhân lực phục vụ công tác đào tạo và tuyển sinh. Đáng chú ý, trong giai đoạn 2020–2030, FPT Telecom dự kiến tuyển dụng khoảng 100–150 kỹ thuật viên mỗi năm, tạo đầu ra việc làm ổn định cho sinh viên BCTech sau tốt nghiệp. Đây là cơ sở quan trọng để nhà trường đẩy mạnh tuyển sinh các nghề kỹ thuật, công nghệ đào tạo theo nhu cầu thực tế của doanh nghiệp. Việc ký kết hợp tác không chỉ mở rộng cơ hội học tập – thực hành – việc làm cho học sinh, sinh viên, mà còn khẳng định định hướng đào tạo gắn với doanh nghiệp, học đi đôi với làm của BCTech trong giai đoạn mới.", "label": 1, "metadata": {"generation_model": "heuristic_rule_engine", "generation_method": "controlled_manipulation", "manipulation_type": "G1", "original_claim": "Trường Cao đẳng BCTech ký kết theo kế hoạch với Công ty Cổ phần Viễn thông FPT, vào thời gian 2026, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "modified_claim": "Trường Cao đẳng BCTech ký kết theo kế hoạch với Công ty Cổ phần Viễn thông FPT, vào thời gian 2020, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "verification_status": "source_contradiction", "image_original": true, "quality_passed": true, "change_summary": "Đổi thời gian từ 2026 thành 2020 (không vượt quá năm 2026)", "image_description": "Ảnh khổ ngang chụp đại diện các bên tại buổi lễ ký kết hoặc làm việc chính thức.", "image_contextual_only": true, "split": "val"}}, {"id": "fake_000002", "source_id": "good_10", "image_path": "real_photo/1787621617_IMG_8856_f.jpg", "text": "BCTech tuyên bố hủy bỏ kế hoạch ký kết và chấm dứt hợp tác với FPT Telecom – Học nghề gắn với việc làm, chưa nhập học đã thấy đầu raNgày đăng: 26/01/2026 Ngày 26/01/2026, Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu (BCTech) đã tuyên bố hủy bỏ kế hoạch ký kết và chấm dứt hợp tác Biên bản thỏa thuận hợp tác với Công ty Cổ phần Viễn thông FPT (FPT Telecom), nhằm đẩy mạnh liên kết đào tạo và phát triển nguồn nhân lực kỹ thuật. Theo nội dung hợp tác, hai bên sẽ phối hợp triển khai các hoạt động trọng tâm như: tổ chức tham quan, thực tập tại doanh nghiệp; tư vấn hướng nghiệp; tham gia xây dựng và thẩm định chương trình đào tạo; nghiên cứu – chuyển giao công nghệ; cung cấp thông tin nhu cầu nhân lực phục vụ công tác đào tạo và tuyển sinh. Đáng chú ý, trong giai đoạn 2026–2030, FPT Telecom dự kiến tuyển dụng khoảng 100–150 kỹ thuật viên mỗi năm, tạo đầu ra việc làm ổn định cho sinh viên BCTech sau tốt nghiệp. Đây là cơ sở quan trọng để nhà trường đẩy mạnh tuyển sinh các nghề kỹ thuật, công nghệ đào tạo theo nhu cầu thực tế của doanh nghiệp. Việc ký kết hợp tác không chỉ mở rộng cơ hội học tập – thực hành – việc làm cho học sinh, sinh viên, mà còn khẳng định định hướng đào tạo gắn với doanh nghiệp, học đi đôi với làm của BCTech trong giai đoạn mới.", "label": 1, "metadata": {"generation_model": "heuristic_rule_engine", "generation_method": "controlled_manipulation", "manipulation_type": "G3", "original_claim": "Trường Cao đẳng BCTech ký kết theo kế hoạch với Công ty Cổ phần Viễn thông FPT, vào thời gian 2026, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "modified_claim": "Trường Cao đẳng BCTech tuyên bố hủy bỏ kế hoạch ký kết và chấm dứt hợp tác theo kế hoạch với Công ty Cổ phần Viễn thông FPT, vào thời gian 2026, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "verification_status": "verified_contradiction", "image_original": true, "quality_passed": true, "change_summary": "Đảo ngược kết quả sự kiện: 'ký kết' -> 'tuyên bố hủy bỏ kế hoạch ký kết và chấm dứt hợp tác'", "image_description": "Ảnh khổ ngang chụp đại diện các bên tại buổi lễ ký kết hoặc làm việc chính thức.", "image_contextual_only": true, "split": "val"}}]}, {"source_id": "good_11", "real": {"id": "real_000002", "source_id": "good_11", "image_path": "real_photo/1787621620_IMG_8281_f.jpg", "text": "BCTech tổ chức đánh giá ngoài chất lượng cơ sở giáo dục nghề nghiệp năm 2026Ngày đăng: 17/01/2026 Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu (BCTech) phối hợp với Công ty Cổ phần Kiểm định và Tư vấn Giáo dục Việt Nam tổ chức đánh giá ngoài chất lượng cơ sở giáo dục nghề nghiệp năm 2026 theo quy định. Toàn cảnh buổi khai mạc Đợt đánh giá được triển khai nhằm rà soát, kiểm chứng mức độ đáp ứng các tiêu chuẩn chất lượng của nhà trường trong các lĩnh vực: công tác quản trị, tổ chức đào tạo, đội ngũ nhà giáo, cơ sở vật chất và hoạt động bảo đảm chất lượng; qua đó làm cơ sở cho việc cải tiến, nâng cao chất lượng đào tạo trong giai đoạn tiếp theo. Trong quá trình làm việc, Đoàn đánh giá ngoài đã nghiên cứu hồ sơ minh chứng, khảo sát thực tế cơ sở vật chất và tiến hành phỏng vấn lãnh đạo nhà trường, cán bộ quản lý, giảng viên, doanh nghiệp, người học và cựu học sinh, sinh viên. Hoạt động đánh giá được thực hiện nghiêm túc, khách quan, đúng quy trình. Đoàn đánh giá phỏng vấn cán bộ quản lý Đoàn đánh giá phỏng vấn nhà tuyển dụng Đoàn đánh giá phỏng vấn cựu HSSV Đoàn đánh giá phỏng vấn đội ngũ nhà giáo Kết thúc đợt đánh giá, Đoàn đánh giá ngoài đã báo cáo kết quả đánh giá sơ bộ, ghi nhận những điểm mạnh của nhà trường, đồng thời đưa ra các khuyến nghị nhằm giúp BCTech tiếp tục hoàn thiện và nâng cao chất lượng đào tạo. Đại diện lãnh đạo nhà trường trân trọng cảm ơn Đoàn đánh giá ngoài và khẳng định sẽ nghiêm túc tiếp thu các ý kiến, xây dựng kế hoạch cải tiến chất lượng phù hợp với định hướng phát triển. TS. Trương Huỳnh Như, Hiệu trưởng nhà trường và TS. Nguyễn Mạnh Cường, Phó Giám đốc Công ty CP Kiểm định và Tư vấn Giáo dục Việt Nam ký biên bản dự thảo kết quả đánh giá ngoài Cán bộ quản lý và đoàn đánh giá chụp hình lưu niệm Đây là sự kiện quan trọng, thể hiện quyết tâm của Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu trong việc không ngừng nâng cao chất lượng giáo dục nghề nghiệp, đáp ứng yêu cầu đào tạo nguồn nhân lực kỹ thuật cho xã hội.", "label": 0, "metadata": {"generation_model": "original_source", "generation_method": "unaltered", "manipulation_type": "none", "original_claim": "Trường Cao đẳng BCTech tổ chức theo kế hoạch với các đối tác liên quan, vào thời gian năm 2026, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "modified_claim": "", "verification_status": "source_fact", "image_original": true, "quality_passed": true, "split": "train"}}, "fakes": [{"id": "fake_000003", "source_id": "good_11", "image_path": "real_photo/1787621620_IMG_8281_f.jpg", "text": "BCTech quyết định hủy bỏ sự kiện đánh giá ngoài chất lượng cơ sở giáo dục nghề nghiệp năm 2026Ngày đăng: 17/01/2026 Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu (BCTech) phối hợp với Công ty Cổ phần Kiểm định và Tư vấn Giáo dục Việt Nam quyết định hủy bỏ sự kiện đánh giá ngoài chất lượng cơ sở giáo dục nghề nghiệp năm 2026 theo quy định. Toàn cảnh buổi khai mạc Đợt đánh giá được triển khai nhằm rà soát, kiểm chứng mức độ đáp ứng các tiêu chuẩn chất lượng của nhà trường trong các lĩnh vực: công tác quản trị, tổ chức đào tạo, đội ngũ nhà giáo, cơ sở vật chất và hoạt động bảo đảm chất lượng; qua đó làm cơ sở cho việc cải tiến, nâng cao chất lượng đào tạo trong giai đoạn tiếp theo. Trong quá trình làm việc, Đoàn đánh giá ngoài đã nghiên cứu hồ sơ minh chứng, khảo sát thực tế cơ sở vật chất và tiến hành phỏng vấn lãnh đạo nhà trường, cán bộ quản lý, giảng viên, doanh nghiệp, người học và cựu học sinh, sinh viên. Hoạt động đánh giá được thực hiện nghiêm túc, khách quan, đúng quy trình. Đoàn đánh giá phỏng vấn cán bộ quản lý Đoàn đánh giá phỏng vấn nhà tuyển dụng Đoàn đánh giá phỏng vấn cựu HSSV Đoàn đánh giá phỏng vấn đội ngũ nhà giáo Kết thúc đợt đánh giá, Đoàn đánh giá ngoài đã báo cáo kết quả đánh giá sơ bộ, ghi nhận những điểm mạnh của nhà trường, đồng thời đưa ra các khuyến nghị nhằm giúp BCTech tiếp tục hoàn thiện và nâng cao chất lượng đào tạo. Đại diện lãnh đạo nhà trường trân trọng cảm ơn Đoàn đánh giá ngoài và khẳng định sẽ nghiêm túc tiếp thu các ý kiến, xây dựng kế hoạch cải tiến chất lượng phù hợp với định hướng phát triển. TS. Trương Huỳnh Như, Hiệu trưởng nhà trường và TS. Nguyễn Mạnh Cường, Phó Giám đốc Công ty CP Kiểm định và Tư vấn Giáo dục Việt Nam ký biên bản dự thảo kết quả đánh giá ngoài Cán bộ quản lý và đoàn đánh giá chụp hình lưu niệm Đây là sự kiện quan trọng, thể hiện quyết tâm của Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu trong việc không ngừng nâng cao chất lượng giáo dục nghề nghiệp, đáp ứng yêu cầu đào tạo nguồn nhân lực kỹ thuật cho xã hội.", "label": 1, "metadata": {"generation_model": "heuristic_rule_engine", "generation_method": "controlled_manipulation", "manipulation_type": "G3", "original_claim": "Trường Cao đẳng BCTech tổ chức theo kế hoạch với các đối tác liên quan, vào thời gian năm 2026, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "modified_claim": "Trường Cao đẳng BCTech quyết định hủy bỏ sự kiện theo kế hoạch với các đối tác liên quan, vào thời gian năm 2026, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "verification_status": "verified_contradiction", "image_original": true, "quality_passed": true, "change_summary": "Đảo ngược kết quả sự kiện: 'tổ chức' -> 'quyết định hủy bỏ sự kiện'", "image_description": "Hình ảnh hiện trường khổ ngang phản ánh hoạt động thực tế liên quan đến bài viết.", "image_contextual_only": true, "split": "train"}}, {"id": "fake_000004", "source_id": "good_11", "image_path": "real_photo/1787621620_IMG_8281_f.jpg", "text": "BCTech tổ chức đánh giá ngoài chất lượng cơ sở giáo dục nghề nghiệp năm 2026Ngày đăng: 17/01/2020 Trường Đại học Bách Khoa TP.HCM phối hợp với Công ty Cổ phần Kiểm định và Tư vấn Giáo dục Việt Nam tổ chức đánh giá ngoài chất lượng cơ sở giáo dục nghề nghiệp năm 2020 theo quy định. Toàn cảnh buổi khai mạc Đợt đánh giá được triển khai nhằm rà soát, kiểm chứng mức độ đáp ứng các tiêu chuẩn chất lượng của nhà trường trong các lĩnh vực: công tác quản trị, tổ chức đào tạo, đội ngũ nhà giáo, cơ sở vật chất và hoạt động bảo đảm chất lượng; qua đó làm cơ sở cho việc cải tiến, nâng cao chất lượng đào tạo trong giai đoạn tiếp theo. Trong quá trình làm việc, Đoàn đánh giá ngoài đã nghiên cứu hồ sơ minh chứng, khảo sát thực tế cơ sở vật chất và tiến hành phỏng vấn lãnh đạo nhà trường, cán bộ quản lý, giảng viên, doanh nghiệp, người học và cựu học sinh, sinh viên. Hoạt động đánh giá được thực hiện nghiêm túc, khách quan, đúng quy trình. Đoàn đánh giá phỏng vấn cán bộ quản lý Đoàn đánh giá phỏng vấn nhà tuyển dụng Đoàn đánh giá phỏng vấn cựu HSSV Đoàn đánh giá phỏng vấn đội ngũ nhà giáo Kết thúc đợt đánh giá, Đoàn đánh giá ngoài đã báo cáo kết quả đánh giá sơ bộ, ghi nhận những điểm mạnh của nhà trường, đồng thời đưa ra các khuyến nghị nhằm giúp BCTech tiếp tục hoàn thiện và nâng cao chất lượng đào tạo. Đại diện lãnh đạo nhà trường trân trọng cảm ơn Đoàn đánh giá ngoài và khẳng định sẽ nghiêm túc tiếp thu các ý kiến, xây dựng kế hoạch cải tiến chất lượng phù hợp với định hướng phát triển. TS. Trương Huỳnh Như, Hiệu trưởng nhà trường và TS. Nguyễn Mạnh Cường, Phó Giám đốc Công ty CP Kiểm định và Tư vấn Giáo dục Việt Nam ký biên bản dự thảo kết quả đánh giá ngoài Cán bộ quản lý và đoàn đánh giá chụp hình lưu niệm Đây là sự kiện quan trọng, thể hiện quyết tâm của Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu trong việc không ngừng nâng cao chất lượng giáo dục nghề nghiệp, đáp ứng yêu cầu đào tạo nguồn nhân lực kỹ thuật cho xã hội.", "label": 1, "metadata": {"generation_model": "heuristic_rule_engine", "generation_method": "controlled_manipulation", "manipulation_type": "G4", "original_claim": "Trường Cao đẳng BCTech tổ chức theo kế hoạch với các đối tác liên quan, vào thời gian năm 2026, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "modified_claim": "Trường Cao đẳng BCTech tổ chức theo kế hoạch với các đối tác liên quan, vào thời gian 2020, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "verification_status": "source_contradiction", "image_original": true, "quality_passed": true, "change_summary": "G4 - Đa thuộc tính: Thay đổi thực thể/đối tác từ 'Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu (BCTech)' thành 'Trường Đại học Bách Khoa TP.HCM'; Đổi thời gian từ năm 2026 thành 2020 (không vượt quá năm 2026)", "image_description": "Hình ảnh hiện trường khổ ngang phản ánh hoạt động thực tế liên quan đến bài viết.", "image_contextual_only": true, "split": "train"}}]}, {"source_id": "good_12", "real": {"id": "real_000003", "source_id": "good_12", "image_path": "real_photo/1787621625_IMG_3128_f.jpg", "text": "Tập huấn nâng cao năng lực giảng dạy kỹ năng mềm và giới thiệu khóa học “Kỹ năng thành công”Ngày đăng: 03/11/2025 Ngày 01/11/2025, Hội Bảo vệ Quyền Trẻ em Thành phố Hồ Chí Minh và Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu (BCTech) phối hợp tổ chức tập huấn nâng cao năng lực giảng dạy kỹ năng mềm và giới thiệu khóa học “Kỹ năng thành công” cho toàn thể viên chức, người lao động của BCTech. Chương trình thuộc “Dự án Kết nối và cung cấp dịch vụ hỗ trợ nhằm hướng tới mục tiêu đảm bảo quyền của các nhóm trẻ em có hoàn cảnh đặc biệt trên địa bàn TP. Hồ Chí Minh”. Buổi tập huấn do thầy Trần Anh Dũng – Cán bộ Dự án, Tổ chức SCI trực tiếp giảng dạy nhằm giúp giảng viên nâng cao phương pháp sư phạm, kỹ năng truyền đạt và ứng dụng kỹ năng mềm trong giảng dạy, góp phần hình thành môi trường học tập hiện đại, nhân văn và hội nhập.", "label": 0, "metadata": {"generation_model": "original_source", "generation_method": "unaltered", "manipulation_type": "none", "original_claim": "Đơn vị tập huấn theo kế hoạch với các đối tác liên quan, vào thời gian 2026, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "modified_claim": "", "verification_status": "source_fact", "image_original": true, "quality_passed": true, "split": "train"}}, "fakes": [{"id": "fake_000005", "source_id": "good_12", "image_path": "real_photo/1787621625_IMG_3128_f.jpg", "text": "Tập huấn nâng cao năng lực giảng dạy kỹ năng mềm và giới thiệu khóa học “Kỹ năng thành công”Ngày đăng: 03/11/2020 Ngày 01/11/2020, Hội Bảo vệ Quyền Trẻ em Thành phố Hồ Chí Minh và Trường Đại học Bách Khoa TP.HCM phối hợp tổ chức tập huấn nâng cao năng lực giảng dạy kỹ năng mềm và giới thiệu khóa học “Kỹ năng thành công” cho toàn thể viên chức, người lao động của BCTech. Chương trình thuộc “Dự án Kết nối và cung cấp dịch vụ hỗ trợ nhằm hướng tới mục tiêu đảm bảo quyền của các nhóm trẻ em có hoàn cảnh đặc biệt trên địa bàn TP. Hồ Chí Minh”. Buổi tập huấn do thầy Trần Anh Dũng – Cán bộ Dự án, Tổ chức SCI trực tiếp giảng dạy nhằm giúp giảng viên nâng cao phương pháp sư phạm, kỹ năng truyền đạt và ứng dụng kỹ năng mềm trong giảng dạy, góp phần hình thành môi trường học tập hiện đại, nhân văn và hội nhập.", "label": 1, "metadata": {"generation_model": "heuristic_rule_engine", "generation_method": "controlled_manipulation", "manipulation_type": "G4", "original_claim": "Đơn vị tập huấn theo kế hoạch với các đối tác liên quan, vào thời gian 2026, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "modified_claim": "Đơn vị tập huấn theo kế hoạch với các đối tác liên quan, vào thời gian 2020, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "verification_status": "source_contradiction", "image_original": true, "quality_passed": true, "change_summary": "G4 - Đa thuộc tính: Thay đổi thực thể/đối tác từ 'Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu (BCTech)' thành 'Trường Đại học Bách Khoa TP.HCM'; Đổi thời gian từ 2026 thành 2020 (không vượt quá năm 2026)", "image_description": "Hình ảnh hiện trường khổ ngang phản ánh hoạt động thực tế liên quan đến bài viết.", "image_contextual_only": true, "split": "train"}}, {"id": "fake_000006", "source_id": "good_12", "image_path": "real_photo/1787621625_IMG_3128_f.jpg", "text": "Tập huấn nâng cao năng lực giảng dạy kỹ năng mềm và giới thiệu khóa học “Kỹ năng thành công”Ngày đăng: 03/11/2020 Ngày 01/11/2020, Hội Bảo vệ Quyền Trẻ em Thành phố Hồ Chí Minh và Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu (BCTech) phối hợp tổ chức tập huấn nâng cao năng lực giảng dạy kỹ năng mềm và giới thiệu khóa học “Kỹ năng thành công” cho toàn thể viên chức, người lao động của BCTech. Chương trình thuộc “Dự án Kết nối và cung cấp dịch vụ hỗ trợ nhằm hướng tới mục tiêu đảm bảo quyền của các nhóm trẻ em có hoàn cảnh đặc biệt trên địa bàn TP. Hồ Chí Minh”. Buổi tập huấn do thầy Trần Anh Dũng – Cán bộ Dự án, Tổ chức SCI trực tiếp giảng dạy nhằm giúp giảng viên nâng cao phương pháp sư phạm, kỹ năng truyền đạt và ứng dụng kỹ năng mềm trong giảng dạy, góp phần hình thành môi trường học tập hiện đại, nhân văn và hội nhập.", "label": 1, "metadata": {"generation_model": "heuristic_rule_engine", "generation_method": "controlled_manipulation", "manipulation_type": "G1", "original_claim": "Đơn vị tập huấn theo kế hoạch với các đối tác liên quan, vào thời gian 2026, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "modified_claim": "Đơn vị tập huấn theo kế hoạch với các đối tác liên quan, vào thời gian 2020, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "verification_status": "source_contradiction", "image_original": true, "quality_passed": true, "change_summary": "Đổi thời gian từ 2026 thành 2020 (không vượt quá năm 2026)", "image_description": "Hình ảnh hiện trường khổ ngang phản ánh hoạt động thực tế liên quan đến bài viết.", "image_contextual_only": true, "split": "train"}}]}, {"source_id": "good_13", "real": {"id": "real_000004", "source_id": "good_13", "image_path": "real_photo/1787621630_BCTech-Co-So-Dat-Do.jpg", "text": "BCTech là 1 trong 5 trường cao đẳng được Bộ GD-ĐT công nhận trường chất lượng caoNgày đăng: 05/02/2026 (Znews) – Năm trường cao đẳng được công nhận trường chất lượng cao bao gồm: Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu, Cao đẳng Kỹ thuật Cao Thắng, Cao đẳng Công nghệ Quốc tế LILAMA 2, Cao đẳng Y tế Thái Bình, Cao đẳng Công nghiệp Huế. Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu (Cơ sở 1) Các trường được công nhận trường cao đẳng chất lượng cao từ ngày 2/2, sau khi đáp ứng các tiêu chí và quy trình đánh giá theo thông tư của Bộ Lao động, Thương binh và Xã hội. Theo đó, các trường phải đáp ứng tiêu chí về quy mô đào tạo; trình độ nhà giáo; gắn kết với doanh nghiệp trong đào tạo và việc làm sau đào tạo; quản trị nhà trường; trình độ học sinh, sinh viên sau đào tạo. Bộ GD&ĐT yêu cầu các trường có trách nhiệm xây dựng, tổ chức thực hiện kế hoạch hành động để khắc phục những điểm tồn tại, duy trì, nâng cao chất lượng giáo dục nghề nghiệp theo quy định hiện hành và chịu sự kiểm tra của cơ quan có thẩm quyền trong thời gian được công nhận. Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu thành lập năm 1998, trực thuộc UBND TP.HCM. Hiện tại, trường tổ chức đào tạo 23 ngành nghề trình độ cao đẳng, 25 nghề trình độ trung cấp và 15 nghề trình độ sơ cấp, gồm các lĩnh vực: Điện, Điện tử, Điện lạnh, Tự động hóa, Cơ khí, Công nghệ ô tô, Công nghệ thông tin, Thiết kế đồ họa, Chế biến thực phẩm, Kỹ thuật chế biến món ăn, Logistics, Quản trị nhà hàng khách sạn, Ngoại ngữ… Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu (Cơ sở 2) Trước đó, hồi cuối tháng 1, Bộ GD&ĐT định hướng xây dựng đề án trường cao đẳng chất lượng cao và trường cao đẳng đạt chuẩn quốc tế. Đề án bảo đảm phù hợp với công tác sắp xếp hệ thống giáo dục nghề nghiệp của các địa phương; các ngành, nghề đào tạo bám sát nhu cầu phát triển kinh tế – xã hội của đất nước. Đề án cũng đề xuất các nhóm giải pháp chính sách như đầu tư cho đội ngũ nhà giáo và người học; cơ chế tự chủ; quản lý, sử dụng tài sản công…", "label": 0, "metadata": {"generation_model": "original_source", "generation_method": "unaltered", "manipulation_type": "none", "original_claim": "Trường Cao đẳng BCTech công nhận theo kế hoạch với Bộ Giáo dục và Đào tạo, vào thời gian 2026, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "modified_claim": "", "verification_status": "source_fact", "image_original": true, "quality_passed": true, "split": "train"}}, "fakes": [{"id": "fake_000007", "source_id": "good_13", "image_path": "real_photo/1787621630_BCTech-Co-So-Dat-Do.jpg", "text": "Trường Đại học Bách Khoa TP.HCM là 1 trong 5 trường cao đẳng được Bộ GD-ĐT công nhận trường chất lượng caoNgày đăng: 05/02/2020 (Znews) – Năm trường cao đẳng được công nhận trường chất lượng cao bao gồm: Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu, Cao đẳng Kỹ thuật Cao Thắng, Cao đẳng Công nghệ Quốc tế LILAMA 2, Cao đẳng Y tế Thái Bình, Cao đẳng Công nghiệp Huế. Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu (Cơ sở 1) Các trường được công nhận trường cao đẳng chất lượng cao từ ngày 2/2, sau khi đáp ứng các tiêu chí và quy trình đánh giá theo thông tư của Bộ Lao động, Thương binh và Xã hội. Theo đó, các trường phải đáp ứng tiêu chí về quy mô đào tạo; trình độ nhà giáo; gắn kết với doanh nghiệp trong đào tạo và việc làm sau đào tạo; quản trị nhà trường; trình độ học sinh, sinh viên sau đào tạo. Bộ GD&ĐT yêu cầu các trường có trách nhiệm xây dựng, tổ chức thực hiện kế hoạch hành động để khắc phục những điểm tồn tại, duy trì, nâng cao chất lượng giáo dục nghề nghiệp theo quy định hiện hành và chịu sự kiểm tra của cơ quan có thẩm quyền trong thời gian được công nhận. Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu thành lập năm 1998, trực thuộc UBND TP.HCM. Hiện tại, trường tổ chức đào tạo 23 ngành nghề trình độ cao đẳng, 25 nghề trình độ trung cấp và 15 nghề trình độ sơ cấp, gồm các lĩnh vực: Điện, Điện tử, Điện lạnh, Tự động hóa, Cơ khí, Công nghệ ô tô, Công nghệ thông tin, Thiết kế đồ họa, Chế biến thực phẩm, Kỹ thuật chế biến món ăn, Logistics, Quản trị nhà hàng khách sạn, Ngoại ngữ… Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu (Cơ sở 2) Trước đó, hồi cuối tháng 1, Bộ GD&ĐT định hướng xây dựng đề án trường cao đẳng chất lượng cao và trường cao đẳng đạt chuẩn quốc tế. Đề án bảo đảm phù hợp với công tác sắp xếp hệ thống giáo dục nghề nghiệp của các địa phương; các ngành, nghề đào tạo bám sát nhu cầu phát triển kinh tế – xã hội của đất nước. Đề án cũng đề xuất các nhóm giải pháp chính sách như đầu tư cho đội ngũ nhà giáo và người học; cơ chế tự chủ; quản lý, sử dụng tài sản công…", "label": 1, "metadata": {"generation_model": "heuristic_rule_engine", "generation_method": "controlled_manipulation", "manipulation_type": "G4", "original_claim": "Trường Cao đẳng BCTech công nhận theo kế hoạch với Bộ Giáo dục và Đào tạo, vào thời gian 2026, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "modified_claim": "Trường Đại học Bách Khoa TP.HCM công nhận theo kế hoạch với Bộ Giáo dục và Đào tạo, vào thời gian 2020, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "verification_status": "source_contradiction", "image_original": true, "quality_passed": true, "change_summary": "G4 - Đa thuộc tính: Thay đổi thực thể/đối tác từ 'BCTech' thành 'Trường Đại học Bách Khoa TP.HCM'; Đổi thời gian từ 2026 thành 2020 (không vượt quá năm 2026)", "image_description": "Hình ảnh hiện trường khổ ngang phản ánh hoạt động thực tế liên quan đến bài viết.", "image_contextual_only": true, "split": "train"}}, {"id": "fake_000008", "source_id": "good_13", "image_path": "real_photo/1787621630_BCTech-Co-So-Dat-Do.jpg", "text": "BCTech là 1 trong 5 trường cao đẳng được Bộ GD-ĐT công nhận trường chất lượng caoNgày đăng: 05/02/2020 (Znews) – Năm trường cao đẳng được công nhận trường chất lượng cao bao gồm: Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu, Cao đẳng Kỹ thuật Cao Thắng, Cao đẳng Công nghệ Quốc tế LILAMA 2, Cao đẳng Y tế Thái Bình, Cao đẳng Công nghiệp Huế. Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu (Cơ sở 1) Các trường được công nhận trường cao đẳng chất lượng cao từ ngày 2/2, sau khi đáp ứng các tiêu chí và quy trình đánh giá theo thông tư của Bộ Lao động, Thương binh và Xã hội. Theo đó, các trường phải đáp ứng tiêu chí về quy mô đào tạo; trình độ nhà giáo; gắn kết với doanh nghiệp trong đào tạo và việc làm sau đào tạo; quản trị nhà trường; trình độ học sinh, sinh viên sau đào tạo. Bộ GD&ĐT yêu cầu các trường có trách nhiệm xây dựng, tổ chức thực hiện kế hoạch hành động để khắc phục những điểm tồn tại, duy trì, nâng cao chất lượng giáo dục nghề nghiệp theo quy định hiện hành và chịu sự kiểm tra của cơ quan có thẩm quyền trong thời gian được công nhận. Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu thành lập năm 1998, trực thuộc UBND TP.HCM. Hiện tại, trường tổ chức đào tạo 23 ngành nghề trình độ cao đẳng, 25 nghề trình độ trung cấp và 15 nghề trình độ sơ cấp, gồm các lĩnh vực: Điện, Điện tử, Điện lạnh, Tự động hóa, Cơ khí, Công nghệ ô tô, Công nghệ thông tin, Thiết kế đồ họa, Chế biến thực phẩm, Kỹ thuật chế biến món ăn, Logistics, Quản trị nhà hàng khách sạn, Ngoại ngữ… Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu (Cơ sở 2) Trước đó, hồi cuối tháng 1, Bộ GD&ĐT định hướng xây dựng đề án trường cao đẳng chất lượng cao và trường cao đẳng đạt chuẩn quốc tế. Đề án bảo đảm phù hợp với công tác sắp xếp hệ thống giáo dục nghề nghiệp của các địa phương; các ngành, nghề đào tạo bám sát nhu cầu phát triển kinh tế – xã hội của đất nước. Đề án cũng đề xuất các nhóm giải pháp chính sách như đầu tư cho đội ngũ nhà giáo và người học; cơ chế tự chủ; quản lý, sử dụng tài sản công…", "label": 1, "metadata": {"generation_model": "heuristic_rule_engine", "generation_method": "controlled_manipulation", "manipulation_type": "G1", "original_claim": "Trường Cao đẳng BCTech công nhận theo kế hoạch với Bộ Giáo dục và Đào tạo, vào thời gian 2026, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "modified_claim": "Trường Cao đẳng BCTech công nhận theo kế hoạch với Bộ Giáo dục và Đào tạo, vào thời gian 2020, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "verification_status": "source_contradiction", "image_original": true, "quality_passed": true, "change_summary": "Đổi thời gian từ 2026 thành 2020 (không vượt quá năm 2026)", "image_description": "Hình ảnh hiện trường khổ ngang phản ánh hoạt động thực tế liên quan đến bài viết.", "image_contextual_only": true, "split": "train"}}]}, {"source_id": "good_14", "real": {"id": "real_000005", "source_id": "good_14", "image_path": "real_photo/1787621634_IMG_7425_f.jpg", "text": "Đoàn công tác của Bộ GD&ĐT khảo sát công tác giáo dục quốc phòng và an ninh cho sinh viên tại BCTechNgày đăng: 13/01/2026 Ngày 12/01/2026, Đoàn khảo sát của Bộ Giáo dục và Đào tạo đã khảo sát công tác tổ chức giảng dạy môn học Giáo dục quốc phòng và an ninh (GDQPAN) tại Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu (BCTech). Tham dự buổi làm việc, về phía Đoàn Khảo sát có đồng chí Thiếu tướng, Tiến sĩ Trần Ngọc Thanh – Vụ trưởng Vụ Giáo dục quốc phòng an ninh của Bộ Giáo dục và Đào tạo làm trưởng đoàn, cùng các thành viên của đoàn công tác. Về phía nhà trường có Tiến sĩ Ngô Xuân Khoát, Bí thư Đảng ủy, Phó Hiệu trưởng và lãnh đạo các phòng, khoa, đơn vị chức năng liên quan. Tại buổi làm việc, Đoàn Khảo sát đã tiến hành đánh giá toàn diện công tác tổ chức dạy, học môn Giáo dục Quốc phòng và an ninh của trường trong thời gian qua. Nội dung khảo sát tập trung vào việc triển khai các chủ trương, quy định của Đảng, Nhà nước và Bộ Giáo dục và Đào tạo; công tác phối hợp tổ chức giảng dạy; quản lý sinh viên; bảo đảm chương trình, thời lượng và kết quả học tập môn Giáo dục Quốc phòng và an ninh. Thiếu tướng, Tiến sĩ Trần Ngọc Thanh – Vụ trưởng Vụ Giáo dục quốc phòng an ninh của Bộ Giáo dục và Đào tạo Báo cáo với Đoàn công tác, Tiến Sĩ Ngô Xuân Khoát cho biết trường luôn xác định môn Giáo dục Quốc phòng và an ninh là nội dung quan trọng trong chương trình đào tạo, góp phần giáo dục toàn diện cho sinh viên. Trong thời gian qua, trường đã thực hiện nghiêm túc, đúng quy định về chương trình, kế hoạch giảng dạy, quản lý sinh viên và cấp phát chứng chỉ. Tiến sĩ Ngô Xuân Khoát, Bí thư Đảng ủy, Phó Hiệu trưởng nhà trường Qua khảo sát thực tế và trao đổi tại buổi làm việc, Đoàn Khảo sát ghi nhận và đánh giá cao những kết quả nhà trường đã đạt được trong công tác tổ chức dạy, học môn Giáo dục Quốc phòng và an ninh; đồng thời ghi nhận các đề xuất, kiến nghị của trường nhằm tiếp tục hoàn thiện công tác phối hợp đào tạo, quản lý và tổ chức giảng dạy môn học trong thời gian tới. Đoàn khảo sát đã trao đổi, hướng dẫn thêm một số nội dung mang tính định hướng, giúp trường tiếp tục rà soát, bổ sung và hoàn thiện hồ sơ, quy trình triển khai theo đúng các quy định hiện hành. Bên cạnh việc đánh giá kết quả triển khai giảng dạy môn GDQP&AN, Đoàn khảo sát đã đôn đốc nhà trường khẩn trương hoàn thiện các điều kiện, thủ tục để thành lập Trung tâm Giáo dục quốc phòng và an ninh, đáp ứng yêu cầu đào tạo trong giai đoạn tới. Kết thúc buổi làm việc, nhà trường nghiêm túc tiếp thu các ý kiến trao đổi, hướng dẫn của Đoàn Khảo sát, tiếp tục rà soát, hoàn thiện công tác tổ chức dạy, học môn Giáo dục quốc phòng và an ninh theo đúng quy định, góp phần nâng cao chất lượng đào tạo trong thời gian tới. Một số hình ảnh được ghi nhận tại buổi khảo sát:", "label": 0, "metadata": {"generation_model": "original_source", "generation_method": "unaltered", "manipulation_type": "none", "original_claim": "Trường Cao đẳng BCTech tổ chức theo kế hoạch với Bộ Giáo dục và Đào tạo, vào thời gian Ngày 12/01/2026, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "modified_claim": "", "verification_status": "source_fact", "image_original": true, "quality_passed": true, "split": "train"}}, "fakes": [{"id": "fake_000009", "source_id": "good_14", "image_path": "real_photo/1787621634_IMG_7425_f.jpg", "text": "Đoàn công tác của Bộ GD&ĐT khảo sát công tác giáo dục quốc phòng và an ninh cho sinh viên tại BCTechNgày đăng: 13/01/2020 Ngày 12/01/2020, Đoàn khảo sát của Bộ Giáo dục và Đào tạo đã khảo sát công tác tổ chức giảng dạy môn học Giáo dục quốc phòng và an ninh (GDQPAN) tại Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu (BCTech). Tham dự buổi làm việc, về phía Đoàn Khảo sát có đồng chí Thiếu tướng, Tiến sĩ Trần Ngọc Thanh – Vụ trưởng Vụ Giáo dục quốc phòng an ninh của Bộ Giáo dục và Đào tạo làm trưởng đoàn, cùng các thành viên của đoàn công tác. Về phía nhà trường có Tiến sĩ Ngô Xuân Khoát, Bí thư Đảng ủy, Phó Hiệu trưởng và lãnh đạo các phòng, khoa, đơn vị chức năng liên quan. Tại buổi làm việc, Đoàn Khảo sát đã tiến hành đánh giá toàn diện công tác tổ chức dạy, học môn Giáo dục Quốc phòng và an ninh của trường trong thời gian qua. Nội dung khảo sát tập trung vào việc triển khai các chủ trương, quy định của Đảng, Nhà nước và Bộ Giáo dục và Đào tạo; công tác phối hợp tổ chức giảng dạy; quản lý sinh viên; bảo đảm chương trình, thời lượng và kết quả học tập môn Giáo dục Quốc phòng và an ninh. Thiếu tướng, Tiến sĩ Trần Ngọc Thanh – Vụ trưởng Vụ Giáo dục quốc phòng an ninh của Bộ Giáo dục và Đào tạo Báo cáo với Đoàn công tác, Tiến Sĩ Ngô Xuân Khoát cho biết trường luôn xác định môn Giáo dục Quốc phòng và an ninh là nội dung quan trọng trong chương trình đào tạo, góp phần giáo dục toàn diện cho sinh viên. Trong thời gian qua, trường đã thực hiện nghiêm túc, đúng quy định về chương trình, kế hoạch giảng dạy, quản lý sinh viên và cấp phát chứng chỉ. Tiến sĩ Ngô Xuân Khoát, Bí thư Đảng ủy, Phó Hiệu trưởng nhà trường Qua khảo sát thực tế và trao đổi tại buổi làm việc, Đoàn Khảo sát ghi nhận và đánh giá cao những kết quả nhà trường đã đạt được trong công tác tổ chức dạy, học môn Giáo dục Quốc phòng và an ninh; đồng thời ghi nhận các đề xuất, kiến nghị của trường nhằm tiếp tục hoàn thiện công tác phối hợp đào tạo, quản lý và tổ chức giảng dạy môn học trong thời gian tới. Đoàn khảo sát đã trao đổi, hướng dẫn thêm một số nội dung mang tính định hướng, giúp trường tiếp tục rà soát, bổ sung và hoàn thiện hồ sơ, quy trình triển khai theo đúng các quy định hiện hành. Bên cạnh việc đánh giá kết quả triển khai giảng dạy môn GDQP&AN, Đoàn khảo sát đã đôn đốc nhà trường khẩn trương hoàn thiện các điều kiện, thủ tục để thành lập Trung tâm Giáo dục quốc phòng và an ninh, đáp ứng yêu cầu đào tạo trong giai đoạn tới. Kết thúc buổi làm việc, nhà trường nghiêm túc tiếp thu các ý kiến trao đổi, hướng dẫn của Đoàn Khảo sát, tiếp tục rà soát, hoàn thiện công tác tổ chức dạy, học môn Giáo dục quốc phòng và an ninh theo đúng quy định, góp phần nâng cao chất lượng đào tạo trong thời gian tới. Một số hình ảnh được ghi nhận tại buổi khảo sát:", "label": 1, "metadata": {"generation_model": "heuristic_rule_engine", "generation_method": "controlled_manipulation", "manipulation_type": "G1", "original_claim": "Trường Cao đẳng BCTech tổ chức theo kế hoạch với Bộ Giáo dục và Đào tạo, vào thời gian Ngày 12/01/2026, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "modified_claim": "Trường Cao đẳng BCTech tổ chức theo kế hoạch với Bộ Giáo dục và Đào tạo, vào thời gian 2020, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "verification_status": "source_contradiction", "image_original": true, "quality_passed": true, "change_summary": "Đổi thời gian từ Ngày 12/01/2026 thành 2020 (không vượt quá năm 2026)", "image_description": "Hình ảnh hiện trường khổ ngang phản ánh hoạt động thực tế liên quan đến bài viết.", "image_contextual_only": true, "split": "train"}}, {"id": "fake_000010", "source_id": "good_14", "image_path": "real_photo/1787621634_IMG_7425_f.jpg", "text": "Đoàn công tác của Bộ GD&ĐT khảo sát công tác giáo dục quốc phòng và an ninh cho sinh viên tại BCTechNgày đăng: 13/01/2026 Ngày 12/01/2026, Đoàn khảo sát của Bộ Giáo dục và Đào tạo đã khảo sát công tác quyết định hủy bỏ sự kiện giảng dạy môn học Giáo dục quốc phòng và an ninh (GDQPAN) tại Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu (BCTech). Tham dự buổi làm việc, về phía Đoàn Khảo sát có đồng chí Thiếu tướng, Tiến sĩ Trần Ngọc Thanh – Vụ trưởng Vụ Giáo dục quốc phòng an ninh của Bộ Giáo dục và Đào tạo làm trưởng đoàn, cùng các thành viên của đoàn công tác. Về phía nhà trường có Tiến sĩ Ngô Xuân Khoát, Bí thư Đảng ủy, Phó Hiệu trưởng và lãnh đạo các phòng, khoa, đơn vị chức năng liên quan. Tại buổi làm việc, Đoàn Khảo sát đã tiến hành đánh giá toàn diện công tác quyết định hủy bỏ sự kiện dạy, học môn Giáo dục Quốc phòng và an ninh của trường trong thời gian qua. Nội dung khảo sát tập trung vào việc triển khai các chủ trương, quy định của Đảng, Nhà nước và Bộ Giáo dục và Đào tạo; công tác phối hợp tổ chức giảng dạy; quản lý sinh viên; bảo đảm chương trình, thời lượng và kết quả học tập môn Giáo dục Quốc phòng và an ninh. Thiếu tướng, Tiến sĩ Trần Ngọc Thanh – Vụ trưởng Vụ Giáo dục quốc phòng an ninh của Bộ Giáo dục và Đào tạo Báo cáo với Đoàn công tác, Tiến Sĩ Ngô Xuân Khoát cho biết trường luôn xác định môn Giáo dục Quốc phòng và an ninh là nội dung quan trọng trong chương trình đào tạo, góp phần giáo dục toàn diện cho sinh viên. Trong thời gian qua, trường đã thực hiện nghiêm túc, đúng quy định về chương trình, kế hoạch giảng dạy, quản lý sinh viên và cấp phát chứng chỉ. Tiến sĩ Ngô Xuân Khoát, Bí thư Đảng ủy, Phó Hiệu trưởng nhà trường Qua khảo sát thực tế và trao đổi tại buổi làm việc, Đoàn Khảo sát ghi nhận và đánh giá cao những kết quả nhà trường đã đạt được trong công tác tổ chức dạy, học môn Giáo dục Quốc phòng và an ninh; đồng thời ghi nhận các đề xuất, kiến nghị của trường nhằm tiếp tục hoàn thiện công tác phối hợp đào tạo, quản lý và tổ chức giảng dạy môn học trong thời gian tới. Đoàn khảo sát đã trao đổi, hướng dẫn thêm một số nội dung mang tính định hướng, giúp trường tiếp tục rà soát, bổ sung và hoàn thiện hồ sơ, quy trình triển khai theo đúng các quy định hiện hành. Bên cạnh việc đánh giá kết quả triển khai giảng dạy môn GDQP&AN, Đoàn khảo sát đã đôn đốc nhà trường khẩn trương hoàn thiện các điều kiện, thủ tục để thành lập Trung tâm Giáo dục quốc phòng và an ninh, đáp ứng yêu cầu đào tạo trong giai đoạn tới. Kết thúc buổi làm việc, nhà trường nghiêm túc tiếp thu các ý kiến trao đổi, hướng dẫn của Đoàn Khảo sát, tiếp tục rà soát, hoàn thiện công tác tổ chức dạy, học môn Giáo dục quốc phòng và an ninh theo đúng quy định, góp phần nâng cao chất lượng đào tạo trong thời gian tới. Một số hình ảnh được ghi nhận tại buổi khảo sát:", "label": 1, "metadata": {"generation_model": "heuristic_rule_engine", "generation_method": "controlled_manipulation", "manipulation_type": "G3", "original_claim": "Trường Cao đẳng BCTech tổ chức theo kế hoạch với Bộ Giáo dục và Đào tạo, vào thời gian Ngày 12/01/2026, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "modified_claim": "Trường Cao đẳng BCTech quyết định hủy bỏ sự kiện theo kế hoạch với Bộ Giáo dục và Đào tạo, vào thời gian Ngày 12/01/2026, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "verification_status": "verified_contradiction", "image_original": true, "quality_passed": true, "change_summary": "Đảo ngược kết quả sự kiện: 'tổ chức' -> 'quyết định hủy bỏ sự kiện'", "image_description": "Hình ảnh hiện trường khổ ngang phản ánh hoạt động thực tế liên quan đến bài viết.", "image_contextual_only": true, "split": "train"}}]}, {"source_id": "good_15", "real": {"id": "real_000006", "source_id": "good_15", "image_path": "real_photo/1787621639_IMG_5165_f.jpg", "text": "Tọa đàm kỷ niệm 43 năm Ngày Hiến chương Nhà giáo Việt Nam 20-11Ngày đăng: 20/11/2025 Chiều 19/11/2025, Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu trang trọng tổ chức Tọa đàm kỷ niệm 43 năm Ngày Hiến chương Nhà giáo Việt Nam. Trong không khí ấm áp và trân trọng, Tiến sĩ Trương Huỳnh Như, Hiệu trưởng nhà trường, đã phát biểu ôn lại truyền thống tôn sư trọng đạo, đồng thời gửi lời tri ân sâu sắc đến đội ngũ viên chức, người lao động đã và đang đóng góp cho sự phát triển của nhà trường. Tiến sĩ Trương Huỳnh Như, Hiệu trưởng nhà trường ôn lại truyền thống ngày Nhà giáo Việt Nam Dịp này, nhà trường tuyên dương – khen thưởng 2 tập thể và 15 cá nhân có thành tích nổi bật trong các hội thi và ghi nhận sự nỗ lực hiệu quả trong công tác chuyên môn. Các cá nhân, tập thể được tuyên dương Không khí buổi tọa đàm trở nên sôi nổi và vui nhộn hơn với trò chơi quay số trúng thưởng và các phần quà ý nghĩa dành cho toàn thể viên chức, người lao động. Một số hình ảnh được ghi nhận tại buổi tọa đàm:", "label": 0, "metadata": {"generation_model": "original_source", "generation_method": "unaltered", "manipulation_type": "none", "original_claim": "Đơn vị tổ chức theo kế hoạch với các đối tác liên quan, vào thời gian 2026, tại Bà Rịa - Vũng Tàu, với số lượng/giá trị 43 năm, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "modified_claim": "", "verification_status": "source_fact", "image_original": true, "quality_passed": true, "split": "train"}}, "fakes": [{"id": "fake_000011", "source_id": "good_15", "image_path": "real_photo/1787621639_IMG_5165_f.jpg", "text": "Tọa đàm kỷ niệm 43 năm Ngày Hiến chương Nhà giáo Việt Nam 20-11Ngày đăng: 20/11/2025 Chiều 19/11/2025, Tập đoàn Đầu tư Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu trang trọng tổ chức Tọa đàm kỷ niệm 43 năm Ngày Hiến chương Nhà giáo Việt Nam. Trong không khí ấm áp và trân trọng, Tiến sĩ Trương Huỳnh Như, Hiệu trưởng nhà trường, đã phát biểu ôn lại truyền thống tôn sư trọng đạo, đồng thời gửi lời tri ân sâu sắc đến đội ngũ viên chức, người lao động đã và đang đóng góp cho sự phát triển của nhà trường. Tiến sĩ Trương Huỳnh Như, Hiệu trưởng nhà trường ôn lại truyền thống ngày Nhà giáo Việt Nam Dịp này, nhà trường tuyên dương – khen thưởng 2 tập thể và 15 cá nhân có thành tích nổi bật trong các hội thi và ghi nhận sự nỗ lực hiệu quả trong công tác chuyên môn. Các cá nhân, tập thể được tuyên dương Không khí buổi tọa đàm trở nên sôi nổi và vui nhộn hơn với trò chơi quay số trúng thưởng và các phần quà ý nghĩa dành cho toàn thể viên chức, người lao động. Một số hình ảnh được ghi nhận tại buổi tọa đàm:", "label": 1, "metadata": {"generation_model": "heuristic_rule_engine", "generation_method": "controlled_manipulation", "manipulation_type": "G2", "original_claim": "Đơn vị tổ chức theo kế hoạch với các đối tác liên quan, vào thời gian 2026, tại Bà Rịa - Vũng Tàu, với số lượng/giá trị 43 năm, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "modified_claim": "Tập đoàn Đầu tư thực hiện liên kết thay cho đơn vị giáo dục", "verification_status": "source_contradiction", "image_original": true, "quality_passed": true, "change_summary": "Thay thế vai trò đơn vị bằng Tập đoàn Đầu tư", "image_description": "Hình ảnh hiện trường khổ ngang phản ánh hoạt động thực tế liên quan đến bài viết.", "image_contextual_only": true, "split": "train"}}, {"id": "fake_000012", "source_id": "good_15", "image_path": "real_photo/1787621639_IMG_5165_f.jpg", "text": "Tọa đàm kỷ niệm 43 năm Ngày Hiến chương Nhà giáo Việt Nam 20-11Ngày đăng: 20/11/2025 Chiều 19/11/2025, Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu trang trọng quyết định hủy bỏ sự kiện Tọa đàm kỷ niệm 43 năm Ngày Hiến chương Nhà giáo Việt Nam. Trong không khí ấm áp và trân trọng, Tiến sĩ Trương Huỳnh Như, Hiệu trưởng nhà trường, đã phát biểu ôn lại truyền thống tôn sư trọng đạo, đồng thời gửi lời tri ân sâu sắc đến đội ngũ viên chức, người lao động đã và đang đóng góp cho sự phát triển của nhà trường. Tiến sĩ Trương Huỳnh Như, Hiệu trưởng nhà trường ôn lại truyền thống ngày Nhà giáo Việt Nam Dịp này, nhà trường tuyên dương – khen thưởng 2 tập thể và 15 cá nhân có thành tích nổi bật trong các hội thi và ghi nhận sự nỗ lực hiệu quả trong công tác chuyên môn. Các cá nhân, tập thể được tuyên dương Không khí buổi tọa đàm trở nên sôi nổi và vui nhộn hơn với trò chơi quay số trúng thưởng và các phần quà ý nghĩa dành cho toàn thể viên chức, người lao động. Một số hình ảnh được ghi nhận tại buổi tọa đàm:", "label": 1, "metadata": {"generation_model": "heuristic_rule_engine", "generation_method": "controlled_manipulation", "manipulation_type": "G3", "original_claim": "Đơn vị tổ chức theo kế hoạch với các đối tác liên quan, vào thời gian 2026, tại Bà Rịa - Vũng Tàu, với số lượng/giá trị 43 năm, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "modified_claim": "Đơn vị quyết định hủy bỏ sự kiện theo kế hoạch với các đối tác liên quan, vào thời gian 2026, tại Bà Rịa - Vũng Tàu, với số lượng/giá trị 43 năm, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "verification_status": "verified_contradiction", "image_original": true, "quality_passed": true, "change_summary": "Đảo ngược kết quả sự kiện: 'tổ chức' -> 'quyết định hủy bỏ sự kiện'", "image_description": "Hình ảnh hiện trường khổ ngang phản ánh hoạt động thực tế liên quan đến bài viết.", "image_contextual_only": true, "split": "train"}}]}, {"source_id": "good_16", "real": {"id": "real_000007", "source_id": "good_16", "image_path": "real_photo/1787621646_IMG_9793_f.jpg", "text": "Bế giảng khoá đào tạo nâng cao kỹ năng nghề do các Nhà đầu tư Lô 06.1 tài trợ 45.000 USDNgày đăng: 27/08/2025 Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu vừa tổ chức Lễ bế giảng Khóa đào tạo nâng cao kỹ năng cho Kỹ thuật viên nghề hàn ống công nghệ – vị trí 6G và nghề Kỹ thuật máy lạnh & điều hòa không khí do các Nhà đầu tư Lô 06.1 tài trợ. Đại diện Nhà tài trợ dự Lễ bế giảng Tháng 10/2024, công ty Zarubezhneft EP Vietnam và các đối tác trong Lô 06.1 – công ty Dầu khí Ấn Độ ONGC Videsh và Tập đoàn Dầu khí Việt Nam đã đồng ý tài trợ 45.000 USD cho Trường CĐ Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu để tổ chức khóa đào tạo nâng cao kỹ năng nghề và tiếng Anh cho kỹ thuật viên nghề Hàn ống công nghệ – vị trí 6G và nghề Kỹ thuật máy lạnh & điều hòa không khí. Chương trình đào tạo nâng cao kỹ năng nghề có thời lượng 350 giờ học, tập trung vào các kỹ năng chuyên sâu, nâng cao theo yêu cầu công nghệ sản xuất của doanh nghiệp. Chương trình đào tạo nâng cao trình độ tiếng Anh được thiết kế với thời lượng 60 giờ học. Trong đó, 80% thời gian để đào tạo tiếng Anh giao tiếp cơ bản và 20% thời gian để đào tạo tiếng Anh chuyên ngành. 50% thời gian của chương trình do giảng viên nước ngoài trực tiếp giảng dạy. Các ứng viên đăng ký tham gia chương trình phải trải qua kỳ thi tuyển đầu vào do nhà trường tổ chức. Học viên trúng tuyển được miễn phí toàn khóa học, được hỗ trợ tiền ăn nhẹ và giải khát giữa giờ là 2,5 USD/học viên/ngày học. Sau khi tốt nghiệp, đa số học viên có việc làm đúng ngành nghề được đào tạo. Với tổng số 108 thí sinh đăng ký tham gia thi tuyển đầu vào, Hội đồng tuyển sinh đã tuyển chọn được 50 học viên tham gia khóa học. Kết quả, 100% học viên hoàn thành chương trình đào tạo. Tại lễ bế giảng, Ban Giám hiệu nhà trường và đại diện nhà tài trợ đã trao Chứng chỉ đào tạo cho 50 học viên; khen thưởng 9 học viên tốt nghiệp loại Giỏi. Từ năm 2012 đến nay, Công ty Zarubezhneft Vietnam (trước đây là Công ty Rosneft Vietnam) đã cùng các đối tác trong Lô 06.1 – Công ty Dầu khí Ấn Độ ONGC Videsh và Petrovietnam đã hỗ trợ tổng số tiền 530.000 USD để đào tạo nâng cao kỹ năng nghề và tiếng Anh cho gần 540 học viên. Khi tham gia khóa học, bên cạnh việc được đào tạo nâng cao kỹ năng chuyên môn, các học viên còn được bồi dưỡng thêm tiếng Anh giao tiếp và tiếng Anh chuyên ngành, giúp các học viên có cơ hội việc làm với thu nhập tốt hơn, tự tin đáp ứng yêu cầu công việc ngày càng cao từ các nhà tuyển dụng.", "label": 0, "metadata": {"generation_model": "original_source", "generation_method": "unaltered", "manipulation_type": "none", "original_claim": "Đơn vị tổ chức theo kế hoạch với các đối tác liên quan, vào thời gian 2026, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "modified_claim": "", "verification_status": "source_fact", "image_original": true, "quality_passed": true, "split": "train"}}, "fakes": [{"id": "fake_000013", "source_id": "good_16", "image_path": "real_photo/1787621646_IMG_9793_f.jpg", "text": "Bế giảng khoá đào tạo nâng cao kỹ năng nghề do các Nhà đầu tư Lô 06.1 tài trợ 45.000 USDNgày đăng: 27/08/2020 Tập đoàn Đầu tư Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu vừa tổ chức Lễ bế giảng Khóa đào tạo nâng cao kỹ năng cho Kỹ thuật viên nghề hàn ống công nghệ – vị trí 6G và nghề Kỹ thuật máy lạnh & điều hòa không khí do các Nhà đầu tư Lô 06.1 tài trợ. Đại diện Nhà tài trợ dự Lễ bế giảng Tháng 10/2020, công ty Zarubezhneft EP Vietnam và các đối tác trong Lô 06.1 – công ty Dầu khí Ấn Độ ONGC Videsh và Tập đoàn Dầu khí Việt Nam đã đồng ý tài trợ 45.000 USD cho Tập đoàn Đầu tư CĐ Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu để tổ chức khóa đào tạo nâng cao kỹ năng nghề và tiếng Anh cho kỹ thuật viên nghề Hàn ống công nghệ – vị trí 6G và nghề Kỹ thuật máy lạnh & điều hòa không khí. Chương trình đào tạo nâng cao kỹ năng nghề có thời lượng 350 giờ học, tập trung vào các kỹ năng chuyên sâu, nâng cao theo yêu cầu công nghệ sản xuất của doanh nghiệp. Chương trình đào tạo nâng cao trình độ tiếng Anh được thiết kế với thời lượng 60 giờ học. Trong đó, 80% thời gian để đào tạo tiếng Anh giao tiếp cơ bản và 20% thời gian để đào tạo tiếng Anh chuyên ngành. 50% thời gian của chương trình do giảng viên nước ngoài trực tiếp giảng dạy. Các ứng viên đăng ký tham gia chương trình phải trải qua kỳ thi tuyển đầu vào do nhà trường tổ chức. Học viên trúng tuyển được miễn phí toàn khóa học, được hỗ trợ tiền ăn nhẹ và giải khát giữa giờ là 2,5 USD/học viên/ngày học. Sau khi tốt nghiệp, đa số học viên có việc làm đúng ngành nghề được đào tạo. Với tổng số 108 thí sinh đăng ký tham gia thi tuyển đầu vào, Hội đồng tuyển sinh đã tuyển chọn được 50 học viên tham gia khóa học. Kết quả, 100% học viên hoàn thành chương trình đào tạo. Tại lễ bế giảng, Ban Giám hiệu nhà trường và đại diện nhà tài trợ đã trao Chứng chỉ đào tạo cho 50 học viên; khen thưởng 9 học viên tốt nghiệp loại Giỏi. Từ năm 2012 đến nay, Công ty Zarubezhneft Vietnam (trước đây là Công ty Rosneft Vietnam) đã cùng các đối tác trong Lô 06.1 – Công ty Dầu khí Ấn Độ ONGC Videsh và Petrovietnam đã hỗ trợ tổng số tiền 530.000 USD để đào tạo nâng cao kỹ năng nghề và tiếng Anh cho gần 540 học viên. Khi tham gia khóa học, bên cạnh việc được đào tạo nâng cao kỹ năng chuyên môn, các học viên còn được bồi dưỡng thêm tiếng Anh giao tiếp và tiếng Anh chuyên ngành, giúp các học viên có cơ hội việc làm với thu nhập tốt hơn, tự tin đáp ứng yêu cầu công việc ngày càng cao từ các nhà tuyển dụng.", "label": 1, "metadata": {"generation_model": "heuristic_rule_engine", "generation_method": "controlled_manipulation", "manipulation_type": "G4", "original_claim": "Đơn vị tổ chức theo kế hoạch với các đối tác liên quan, vào thời gian 2026, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "modified_claim": "Tập đoàn Đầu tư thực hiện liên kết thay cho đơn vị giáo dục", "verification_status": "source_contradiction", "image_original": true, "quality_passed": true, "change_summary": "G4 - Đa thuộc tính: Thay thế vai trò đơn vị bằng Tập đoàn Đầu tư; Đổi thời gian từ 2026 thành 2020 (không vượt quá năm 2026)", "image_description": "Hình ảnh hiện trường khổ ngang phản ánh hoạt động thực tế liên quan đến bài viết.", "image_contextual_only": true, "split": "train"}}, {"id": "fake_000014", "source_id": "good_16", "image_path": "real_photo/1787621646_IMG_9793_f.jpg", "text": "Bế giảng khoá đào tạo nâng cao kỹ năng nghề do các Nhà đầu tư Lô 06.1 tài trợ 45.000 USDNgày đăng: 27/08/2020 Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu vừa tổ chức Lễ bế giảng Khóa đào tạo nâng cao kỹ năng cho Kỹ thuật viên nghề hàn ống công nghệ – vị trí 6G và nghề Kỹ thuật máy lạnh & điều hòa không khí do các Nhà đầu tư Lô 06.1 tài trợ. Đại diện Nhà tài trợ dự Lễ bế giảng Tháng 10/2020, công ty Zarubezhneft EP Vietnam và các đối tác trong Lô 06.1 – công ty Dầu khí Ấn Độ ONGC Videsh và Tập đoàn Dầu khí Việt Nam đã đồng ý tài trợ 45.000 USD cho Trường CĐ Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu để tổ chức khóa đào tạo nâng cao kỹ năng nghề và tiếng Anh cho kỹ thuật viên nghề Hàn ống công nghệ – vị trí 6G và nghề Kỹ thuật máy lạnh & điều hòa không khí. Chương trình đào tạo nâng cao kỹ năng nghề có thời lượng 350 giờ học, tập trung vào các kỹ năng chuyên sâu, nâng cao theo yêu cầu công nghệ sản xuất của doanh nghiệp. Chương trình đào tạo nâng cao trình độ tiếng Anh được thiết kế với thời lượng 60 giờ học. Trong đó, 80% thời gian để đào tạo tiếng Anh giao tiếp cơ bản và 20% thời gian để đào tạo tiếng Anh chuyên ngành. 50% thời gian của chương trình do giảng viên nước ngoài trực tiếp giảng dạy. Các ứng viên đăng ký tham gia chương trình phải trải qua kỳ thi tuyển đầu vào do nhà trường tổ chức. Học viên trúng tuyển được miễn phí toàn khóa học, được hỗ trợ tiền ăn nhẹ và giải khát giữa giờ là 2,5 USD/học viên/ngày học. Sau khi tốt nghiệp, đa số học viên có việc làm đúng ngành nghề được đào tạo. Với tổng số 108 thí sinh đăng ký tham gia thi tuyển đầu vào, Hội đồng tuyển sinh đã tuyển chọn được 50 học viên tham gia khóa học. Kết quả, 100% học viên hoàn thành chương trình đào tạo. Tại lễ bế giảng, Ban Giám hiệu nhà trường và đại diện nhà tài trợ đã trao Chứng chỉ đào tạo cho 50 học viên; khen thưởng 9 học viên tốt nghiệp loại Giỏi. Từ năm 2012 đến nay, Công ty Zarubezhneft Vietnam (trước đây là Công ty Rosneft Vietnam) đã cùng các đối tác trong Lô 06.1 – Công ty Dầu khí Ấn Độ ONGC Videsh và Petrovietnam đã hỗ trợ tổng số tiền 530.000 USD để đào tạo nâng cao kỹ năng nghề và tiếng Anh cho gần 540 học viên. Khi tham gia khóa học, bên cạnh việc được đào tạo nâng cao kỹ năng chuyên môn, các học viên còn được bồi dưỡng thêm tiếng Anh giao tiếp và tiếng Anh chuyên ngành, giúp các học viên có cơ hội việc làm với thu nhập tốt hơn, tự tin đáp ứng yêu cầu công việc ngày càng cao từ các nhà tuyển dụng.", "label": 1, "metadata": {"generation_model": "heuristic_rule_engine", "generation_method": "controlled_manipulation", "manipulation_type": "G1", "original_claim": "Đơn vị tổ chức theo kế hoạch với các đối tác liên quan, vào thời gian 2026, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "modified_claim": "Đơn vị tổ chức theo kế hoạch với các đối tác liên quan, vào thời gian 2020, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "verification_status": "source_contradiction", "image_original": true, "quality_passed": true, "change_summary": "Đổi thời gian từ 2026 thành 2020 (không vượt quá năm 2026)", "image_description": "Hình ảnh hiện trường khổ ngang phản ánh hoạt động thực tế liên quan đến bài viết.", "image_contextual_only": true, "split": "train"}}]}, {"source_id": "good_17", "real": {"id": "real_000008", "source_id": "good_17", "image_path": "real_photo/1787621658_IMG_6563_f.jpg", "text": "Bế mạc đánh giá Trường Cao đẳng Chất lượng cao – Dấu mốc quan trọng trong chiến lược phát triển của BCTechNgày đăng: 17/12/2025 Chiều ngày 16/12/2025, tại Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu (BCTech), Cục Giáo dục nghề nghiệp và Giáo dục thường xuyên – Bộ Giáo dục và Đào tạo đã tổ chức Bế mạc Kỳ đánh giá Trường Cao đẳng Chất lượng cao năm 2025, chính thức khép lại 05 ngày làm việc nghiêm túc, khách quan và hiệu quả của Đoàn đánh giá, diễn ra từ ngày 12/12 đến ngày 16/12/2025. Tham dự buổi lễ có ông Lê Quốc Bình, Trưởng Đoàn đánh giá và các thành viên trong Đoàn; về phía BCTech có Ban Giám hiệu, lãnh đạo các phòng, khoa, giảng viên. Trong thời gian khảo sát, Đoàn đánh giá đã tiến hành nghiên cứu hồ sơ minh chứng; khảo sát thực tế điều kiện cơ sở vật chất, trang thiết bị đào tạo; phỏng vấn cán bộ quản lý, đại diện doanh nghiệp, cựu sinh viên, nhà giáo, viên chức và học sinh, sinh viên; đồng thời quan sát trực tiếp các hoạt động đào tạo và quản lý tại nhà trường. Các hoạt động được triển khai bài bản, đúng quy trình, bảo đảm tính khách quan và minh bạch. Tại buổi bế mạc, Bà Phùng Thị Kim Thoa, Thư ký Đoàn đánh giá đã trình bày báo cáo sơ bộ kết quả khảo sát chính thức, ghi nhận những kết quả nổi bật của nhà trường trong việc đáp ứng các tiêu chí Trường Cao đẳng chất lượng cao, đặc biệt là sự quan tâm đầu tư có trọng tâm, trọng điểm về cơ sở vật chất, chương trình đào tạo và đội ngũ nhà giáo, đáp ứng yêu cầu đào tạo nguồn nhân lực kỹ thuật – công nghệ cho Thành phố và khu vực. Bên cạnh đó, Đoàn cũng đưa ra những khuyến nghị mang tính định hướng, giúp Nhà trường tiếp tục hoàn thiện và nâng cao chất lượng trong giai đoạn tới. Bà Phùng Thị Kim Thoa, Thư ký Đoàn đánh giá đã trình bày báo cáo sơ bộ kết quả khảo sát chính thức TS. Trương Huỳnh Như, Hiệu trưởng nhà trường trân trọng cảm ơn Đoàn đánh giá đã làm việc công tâm, trách nhiệm, đồng thời khẳng định nhà trường sẽ nghiêm túc tiếp thu các ý kiến đánh giá, xây dựng kế hoạch cải tiến cụ thể, xem đây là cơ sở quan trọng để nâng cao hiệu quả quản trị, chất lượng đào tạo và uy tín của nhà trường. TS. Trương Huỳnh Như, Hiệu trưởng nhà trường phát biểu tại buổi Bế mạc Việc hoàn thành đợt đánh giá không chỉ là nhiệm vụ trọng tâm trong năm 2025, mà còn thể hiện quyết tâm chính trị và sự đồng lòng của tập thể cán bộ, giảng viên và học sinh, sinh viên trong lộ trình xây dựng Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu phát triển bền vững, đáp ứng yêu cầu Trường Cao đẳng chất lượng cao trong giai đoạn mới. Ông Lê Quốc Bình, Trưởng Đoàn đánh giá và Bà Trương Huỳnh Như, Hiệu trưởng nhà trường ký biên bản hoàn thành đợt khảo sát chính thức Kết thúc buổi lễ, Trưởng Đoàn đánh giá và Hiệu trưởng nhà trường đã ký biên bản hoàn thành đợt khảo sát chính thức, đánh dấu một bước tiến quan trọng trong hành trình khẳng định chất lượng và vị thế của BCTech.", "label": 0, "metadata": {"generation_model": "original_source", "generation_method": "unaltered", "manipulation_type": "none", "original_claim": "Trường Cao đẳng BCTech tổ chức theo kế hoạch với Bộ Giáo dục và Đào tạo, vào thời gian ngày 16/12/2025, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "modified_claim": "", "verification_status": "source_fact", "image_original": true, "quality_passed": true, "split": "train"}}, "fakes": [{"id": "fake_000015", "source_id": "good_17", "image_path": "real_photo/1787621658_IMG_6563_f.jpg", "text": "Bế mạc đánh giá Trường Cao đẳng Chất lượng cao – Dấu mốc quan trọng trong chiến lược phát triển của BCTechNgày đăng: 17/12/2019 Chiều ngày 16/12/2019, tại Trường Đại học Bách Khoa TP.HCM, Cục Giáo dục nghề nghiệp và Giáo dục thường xuyên – Bộ Giáo dục và Đào tạo đã tổ chức Bế mạc Kỳ đánh giá Trường Cao đẳng Chất lượng cao năm 2019, chính thức khép lại 05 ngày làm việc nghiêm túc, khách quan và hiệu quả của Đoàn đánh giá, diễn ra từ ngày 12/12 đến ngày 16/12/2019. Tham dự buổi lễ có ông Lê Quốc Bình, Trưởng Đoàn đánh giá và các thành viên trong Đoàn; về phía BCTech có Ban Giám hiệu, lãnh đạo các phòng, khoa, giảng viên. Trong thời gian khảo sát, Đoàn đánh giá đã tiến hành nghiên cứu hồ sơ minh chứng; khảo sát thực tế điều kiện cơ sở vật chất, trang thiết bị đào tạo; phỏng vấn cán bộ quản lý, đại diện doanh nghiệp, cựu sinh viên, nhà giáo, viên chức và học sinh, sinh viên; đồng thời quan sát trực tiếp các hoạt động đào tạo và quản lý tại nhà trường. Các hoạt động được triển khai bài bản, đúng quy trình, bảo đảm tính khách quan và minh bạch. Tại buổi bế mạc, Bà Phùng Thị Kim Thoa, Thư ký Đoàn đánh giá đã trình bày báo cáo sơ bộ kết quả khảo sát chính thức, ghi nhận những kết quả nổi bật của nhà trường trong việc đáp ứng các tiêu chí Trường Cao đẳng chất lượng cao, đặc biệt là sự quan tâm đầu tư có trọng tâm, trọng điểm về cơ sở vật chất, chương trình đào tạo và đội ngũ nhà giáo, đáp ứng yêu cầu đào tạo nguồn nhân lực kỹ thuật – công nghệ cho Thành phố và khu vực. Bên cạnh đó, Đoàn cũng đưa ra những khuyến nghị mang tính định hướng, giúp Nhà trường tiếp tục hoàn thiện và nâng cao chất lượng trong giai đoạn tới. Bà Phùng Thị Kim Thoa, Thư ký Đoàn đánh giá đã trình bày báo cáo sơ bộ kết quả khảo sát chính thức TS. Trương Huỳnh Như, Hiệu trưởng nhà trường trân trọng cảm ơn Đoàn đánh giá đã làm việc công tâm, trách nhiệm, đồng thời khẳng định nhà trường sẽ nghiêm túc tiếp thu các ý kiến đánh giá, xây dựng kế hoạch cải tiến cụ thể, xem đây là cơ sở quan trọng để nâng cao hiệu quả quản trị, chất lượng đào tạo và uy tín của nhà trường. TS. Trương Huỳnh Như, Hiệu trưởng nhà trường phát biểu tại buổi Bế mạc Việc hoàn thành đợt đánh giá không chỉ là nhiệm vụ trọng tâm trong năm 2019, mà còn thể hiện quyết tâm chính trị và sự đồng lòng của tập thể cán bộ, giảng viên và học sinh, sinh viên trong lộ trình xây dựng Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu phát triển bền vững, đáp ứng yêu cầu Trường Cao đẳng chất lượng cao trong giai đoạn mới. Ông Lê Quốc Bình, Trưởng Đoàn đánh giá và Bà Trương Huỳnh Như, Hiệu trưởng nhà trường ký biên bản hoàn thành đợt khảo sát chính thức Kết thúc buổi lễ, Trưởng Đoàn đánh giá và Hiệu trưởng nhà trường đã ký biên bản hoàn thành đợt khảo sát chính thức, đánh dấu một bước tiến quan trọng trong hành trình khẳng định chất lượng và vị thế của BCTech.", "label": 1, "metadata": {"generation_model": "heuristic_rule_engine", "generation_method": "controlled_manipulation", "manipulation_type": "G4", "original_claim": "Trường Cao đẳng BCTech tổ chức theo kế hoạch với Bộ Giáo dục và Đào tạo, vào thời gian ngày 16/12/2025, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "modified_claim": "Trường Cao đẳng BCTech tổ chức theo kế hoạch với Bộ Giáo dục và Đào tạo, vào thời gian 2019, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "verification_status": "source_contradiction", "image_original": true, "quality_passed": true, "change_summary": "G4 - Đa thuộc tính: Thay đổi thực thể/đối tác từ 'Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu (BCTech)' thành 'Trường Đại học Bách Khoa TP.HCM'; Đổi thời gian từ ngày 16/12/2025 thành 2019 (không vượt quá năm 2026)", "image_description": "Hình ảnh hiện trường khổ ngang phản ánh hoạt động thực tế liên quan đến bài viết.", "image_contextual_only": true, "split": "train"}}, {"id": "fake_000016", "source_id": "good_17", "image_path": "real_photo/1787621658_IMG_6563_f.jpg", "text": "Bế mạc đánh giá Trường Cao đẳng Chất lượng cao – Dấu mốc quan trọng trong chiến lược phát triển của BCTechNgày đăng: 17/12/2019 Chiều ngày 16/12/2019, tại Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu (BCTech), Cục Giáo dục nghề nghiệp và Giáo dục thường xuyên – Bộ Giáo dục và Đào tạo đã tổ chức Bế mạc Kỳ đánh giá Trường Cao đẳng Chất lượng cao năm 2019, chính thức khép lại 05 ngày làm việc nghiêm túc, khách quan và hiệu quả của Đoàn đánh giá, diễn ra từ ngày 12/12 đến ngày 16/12/2019. Tham dự buổi lễ có ông Lê Quốc Bình, Trưởng Đoàn đánh giá và các thành viên trong Đoàn; về phía BCTech có Ban Giám hiệu, lãnh đạo các phòng, khoa, giảng viên. Trong thời gian khảo sát, Đoàn đánh giá đã tiến hành nghiên cứu hồ sơ minh chứng; khảo sát thực tế điều kiện cơ sở vật chất, trang thiết bị đào tạo; phỏng vấn cán bộ quản lý, đại diện doanh nghiệp, cựu sinh viên, nhà giáo, viên chức và học sinh, sinh viên; đồng thời quan sát trực tiếp các hoạt động đào tạo và quản lý tại nhà trường. Các hoạt động được triển khai bài bản, đúng quy trình, bảo đảm tính khách quan và minh bạch. Tại buổi bế mạc, Bà Phùng Thị Kim Thoa, Thư ký Đoàn đánh giá đã trình bày báo cáo sơ bộ kết quả khảo sát chính thức, ghi nhận những kết quả nổi bật của nhà trường trong việc đáp ứng các tiêu chí Trường Cao đẳng chất lượng cao, đặc biệt là sự quan tâm đầu tư có trọng tâm, trọng điểm về cơ sở vật chất, chương trình đào tạo và đội ngũ nhà giáo, đáp ứng yêu cầu đào tạo nguồn nhân lực kỹ thuật – công nghệ cho Thành phố và khu vực. Bên cạnh đó, Đoàn cũng đưa ra những khuyến nghị mang tính định hướng, giúp Nhà trường tiếp tục hoàn thiện và nâng cao chất lượng trong giai đoạn tới. Bà Phùng Thị Kim Thoa, Thư ký Đoàn đánh giá đã trình bày báo cáo sơ bộ kết quả khảo sát chính thức TS. Trương Huỳnh Như, Hiệu trưởng nhà trường trân trọng cảm ơn Đoàn đánh giá đã làm việc công tâm, trách nhiệm, đồng thời khẳng định nhà trường sẽ nghiêm túc tiếp thu các ý kiến đánh giá, xây dựng kế hoạch cải tiến cụ thể, xem đây là cơ sở quan trọng để nâng cao hiệu quả quản trị, chất lượng đào tạo và uy tín của nhà trường. TS. Trương Huỳnh Như, Hiệu trưởng nhà trường phát biểu tại buổi Bế mạc Việc hoàn thành đợt đánh giá không chỉ là nhiệm vụ trọng tâm trong năm 2019, mà còn thể hiện quyết tâm chính trị và sự đồng lòng của tập thể cán bộ, giảng viên và học sinh, sinh viên trong lộ trình xây dựng Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu phát triển bền vững, đáp ứng yêu cầu Trường Cao đẳng chất lượng cao trong giai đoạn mới. Ông Lê Quốc Bình, Trưởng Đoàn đánh giá và Bà Trương Huỳnh Như, Hiệu trưởng nhà trường ký biên bản hoàn thành đợt khảo sát chính thức Kết thúc buổi lễ, Trưởng Đoàn đánh giá và Hiệu trưởng nhà trường đã ký biên bản hoàn thành đợt khảo sát chính thức, đánh dấu một bước tiến quan trọng trong hành trình khẳng định chất lượng và vị thế của BCTech.", "label": 1, "metadata": {"generation_model": "heuristic_rule_engine", "generation_method": "controlled_manipulation", "manipulation_type": "G1", "original_claim": "Trường Cao đẳng BCTech tổ chức theo kế hoạch với Bộ Giáo dục và Đào tạo, vào thời gian ngày 16/12/2025, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "modified_claim": "Trường Cao đẳng BCTech tổ chức theo kế hoạch với Bộ Giáo dục và Đào tạo, vào thời gian 2019, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "verification_status": "source_contradiction", "image_original": true, "quality_passed": true, "change_summary": "Đổi thời gian từ ngày 16/12/2025 thành 2019 (không vượt quá năm 2026)", "image_description": "Hình ảnh hiện trường khổ ngang phản ánh hoạt động thực tế liên quan đến bài viết.", "image_contextual_only": true, "split": "train"}}]}, {"source_id": "good_18", "real": {"id": "real_000009", "source_id": "good_18", "image_path": "real_photo/1787621663_VF-1-f.jpg", "text": "BCTech hợp tác cùng VinFast – Tăng tốc đào tạo công nghệ caoNgày đăng: 25/01/2026 Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu (BCTech) tham gia Lễ ký kết Biên bản ghi nhớ hợp tác đào tạo với VinFast trong khuôn khổ chương trình liên kết giữa VinFast và các trường đại học, cao đẳng kỹ thuật trên toàn quốc. TS. Trương Huỳnh Như, Hiệu trưởng nhà trường (bìa trái) ký kết hợp tác với VinFast VinFast đã trao tặng xe ô tô điện phục vụ trực tiếp cho công tác giảng dạy – thực hành tại Nhà trường; đồng thời chuyển giao học liệu, chương trình đào tạo và chia sẻ kinh nghiệm thực tiễn từ doanh nghiệp. Qua đó, sinh viên BCTech được tiếp cận sớm công nghệ xe điện hiện đại, quy trình sản xuất tiên tiến, từng bước hình thành năng lực nghề nghiệp đáp ứng yêu cầu của thị trường lao động chất lượng cao. Chương trình hợp tác với VinFast là minh chứng rõ nét cho chiến lược đào tạo gắn với doanh nghiệp – học đi đôi với hành – làm chủ công nghệ mới mà BCTech đang kiên trì theo đuổi. Đây cũng là nền tảng quan trọng để mở rộng cơ hội thực tập, việc làm và phát triển nghề nghiệp bền vững cho sinh viên sau khi tốt nghiệp. VinFast tài trợ cho trường xe VF8 Với sự đồng hành của các doanh nghiệp lớn, BCTech tiếp tục khẳng định vai trò là cơ sở giáo dục nghề nghiệp uy tín, đào tạo nguồn nhân lực kỹ thuật chất lượng cao, sẵn sàng tham gia vào tiến trình chuyển đổi xanh và công nghiệp hóa – hiện đại hóa đất nước.", "label": 0, "metadata": {"generation_model": "original_source", "generation_method": "unaltered", "manipulation_type": "none", "original_claim": "Trường Cao đẳng BCTech ký kết theo kế hoạch với các đối tác liên quan, vào thời gian 2026, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "modified_claim": "", "verification_status": "source_fact", "image_original": true, "quality_passed": true, "split": "train"}}, "fakes": [{"id": "fake_000017", "source_id": "good_18", "image_path": "real_photo/1787621663_VF-1-f.jpg", "text": "BCTech hợp tác cùng VinFast – Tăng tốc đào tạo công nghệ caoNgày đăng: 25/01/2020 Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu (BCTech) tham gia Lễ ký kết Biên bản ghi nhớ hợp tác đào tạo với VinFast trong khuôn khổ chương trình liên kết giữa VinFast và các trường đại học, cao đẳng kỹ thuật trên toàn quốc. TS. Trương Huỳnh Như, Hiệu trưởng nhà trường (bìa trái) ký kết hợp tác với VinFast VinFast đã trao tặng xe ô tô điện phục vụ trực tiếp cho công tác giảng dạy – thực hành tại Nhà trường; đồng thời chuyển giao học liệu, chương trình đào tạo và chia sẻ kinh nghiệm thực tiễn từ doanh nghiệp. Qua đó, sinh viên BCTech được tiếp cận sớm công nghệ xe điện hiện đại, quy trình sản xuất tiên tiến, từng bước hình thành năng lực nghề nghiệp đáp ứng yêu cầu của thị trường lao động chất lượng cao. Chương trình hợp tác với VinFast là minh chứng rõ nét cho chiến lược đào tạo gắn với doanh nghiệp – học đi đôi với hành – làm chủ công nghệ mới mà BCTech đang kiên trì theo đuổi. Đây cũng là nền tảng quan trọng để mở rộng cơ hội thực tập, việc làm và phát triển nghề nghiệp bền vững cho sinh viên sau khi tốt nghiệp. VinFast tài trợ cho trường xe VF8 Với sự đồng hành của các doanh nghiệp lớn, BCTech tiếp tục khẳng định vai trò là cơ sở giáo dục nghề nghiệp uy tín, đào tạo nguồn nhân lực kỹ thuật chất lượng cao, sẵn sàng tham gia vào tiến trình chuyển đổi xanh và công nghiệp hóa – hiện đại hóa đất nước.", "label": 1, "metadata": {"generation_model": "heuristic_rule_engine", "generation_method": "controlled_manipulation", "manipulation_type": "G1", "original_claim": "Trường Cao đẳng BCTech ký kết theo kế hoạch với các đối tác liên quan, vào thời gian 2026, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "modified_claim": "Trường Cao đẳng BCTech ký kết theo kế hoạch với các đối tác liên quan, vào thời gian 2020, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "verification_status": "source_contradiction", "image_original": true, "quality_passed": true, "change_summary": "Đổi thời gian từ 2026 thành 2020 (không vượt quá năm 2026)", "image_description": "Hình ảnh hiện trường khổ ngang phản ánh hoạt động thực tế liên quan đến bài viết.", "image_contextual_only": true, "split": "train"}}, {"id": "fake_000018", "source_id": "good_18", "image_path": "real_photo/1787621663_VF-1-f.jpg", "text": "BCTech hợp tác cùng VinFast – Tăng tốc đào tạo công nghệ caoNgày đăng: 25/01/2026 Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu (BCTech) tham gia Lễ tuyên bố hủy bỏ kế hoạch ký kết và chấm dứt hợp tác Biên bản ghi nhớ hợp tác đào tạo với VinFast trong khuôn khổ chương trình liên kết giữa VinFast và các trường đại học, cao đẳng kỹ thuật trên toàn quốc. TS. Trương Huỳnh Như, Hiệu trưởng nhà trường (bìa trái) tuyên bố hủy bỏ kế hoạch ký kết và chấm dứt hợp tác hợp tác với VinFast VinFast đã trao tặng xe ô tô điện phục vụ trực tiếp cho công tác giảng dạy – thực hành tại Nhà trường; đồng thời chuyển giao học liệu, chương trình đào tạo và chia sẻ kinh nghiệm thực tiễn từ doanh nghiệp. Qua đó, sinh viên BCTech được tiếp cận sớm công nghệ xe điện hiện đại, quy trình sản xuất tiên tiến, từng bước hình thành năng lực nghề nghiệp đáp ứng yêu cầu của thị trường lao động chất lượng cao. Chương trình hợp tác với VinFast là minh chứng rõ nét cho chiến lược đào tạo gắn với doanh nghiệp – học đi đôi với hành – làm chủ công nghệ mới mà BCTech đang kiên trì theo đuổi. Đây cũng là nền tảng quan trọng để mở rộng cơ hội thực tập, việc làm và phát triển nghề nghiệp bền vững cho sinh viên sau khi tốt nghiệp. VinFast tài trợ cho trường xe VF8 Với sự đồng hành của các doanh nghiệp lớn, BCTech tiếp tục khẳng định vai trò là cơ sở giáo dục nghề nghiệp uy tín, đào tạo nguồn nhân lực kỹ thuật chất lượng cao, sẵn sàng tham gia vào tiến trình chuyển đổi xanh và công nghiệp hóa – hiện đại hóa đất nước.", "label": 1, "metadata": {"generation_model": "heuristic_rule_engine", "generation_method": "controlled_manipulation", "manipulation_type": "G3", "original_claim": "Trường Cao đẳng BCTech ký kết theo kế hoạch với các đối tác liên quan, vào thời gian 2026, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "modified_claim": "Trường Cao đẳng BCTech tuyên bố hủy bỏ kế hoạch ký kết và chấm dứt hợp tác theo kế hoạch với các đối tác liên quan, vào thời gian 2026, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "verification_status": "verified_contradiction", "image_original": true, "quality_passed": true, "change_summary": "Đảo ngược kết quả sự kiện: 'ký kết' -> 'tuyên bố hủy bỏ kế hoạch ký kết và chấm dứt hợp tác'", "image_description": "Hình ảnh hiện trường khổ ngang phản ánh hoạt động thực tế liên quan đến bài viết.", "image_contextual_only": true, "split": "train"}}]}, {"source_id": "good_19", "real": {"id": "real_000010", "source_id": "good_19", "image_path": "real_photo/1787621667_TAI_3409_f.jpg", "text": "Lễ gắn kết Nhà trường – Doanh nghiệp và khởi động năm học 2025 – 2026Ngày đăng: 08/11/2025 Chiều 07/11/2025, Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu (BCTech) tổ chức Lễ gắn kết Nhà trường – Doanh nghiệp và khởi động năm học 2025-2026. Dự buổi lễ có đồng chí Nguyễn Trường Nhật Phượng, Thành ủy viên, Phó Chủ tịch HĐND TPHCM. Đồng chí Nguyễn Trường Nhật Phượng, Thành ủy viên, Phó Chủ tịch HĐND TPHCM tặng hoa chúc mừng lãnh đạo Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu Phát biểu khai mạc, bà Trương Huỳnh Như, Hiệu trưởng Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu cho biết, đào tạo nguồn nhân lực kỹ thuật chất lượng cao phục vụ kinh tế biển và công nghiệp xanh trở thành nhiệm vụ trọng tâm mà nhà trường quyết tâm theo đuổi. Trong hành trình ấy, nhà trường luôn nhận được sự quan tâm, chỉ đạo sát sao của UBND TPHCM, cùng sự phối hợp, hỗ trợ của các sở, ban, ngành. Nhờ đó, BCTech từng bước khẳng định vị thế là một trong những cơ sở đào tạo nghề trọng điểm của vùng. BCTech ký kết hợp tác đào tạo với doanh nghiệp “Nhà trường luôn tâm niệm rằng: “Sức mạnh của giáo dục nghề nghiệp là sức mạnh của sự gắn kết”, gắn kết giữa chính quyền, doanh nghiệp và nhà trường, vì cùng một mục tiêu: phát triển nguồn nhân lực chất lượng cao, đáp ứng yêu cầu phát triển nhanh và bền vững của TPHCM mới”, bà Như nhấn mạnh. BCTech tiếp nhận tài trợ học bổng từ doanh nghiệp Tại buổi lễ, nhà trường đã ký kết hợp tác đào tạo với 5 doanh nghiệp. Đồng thời tiếp nhận tài trợ từ 30 tổ chức và doanh nghiệp cho Quỹ học bổng của trường. Nhân dịp này, BCTech tri ân các doanh nghiệp, trường học đã đồng hành trong suốt thời gian qua. Phát biểu tại buổi lễ, Phó Chủ tịch HĐND TPHCM Nguyễn Trường Nhật Phượng yêu cầu, thời gian tới BCTech tiếp tục đổi mới mô hình đào tạo theo năng lực thực tiễn, lấy người học làm trung tâm, lấy thầy cô giáo làm tấm gương về đạo đức, tinh thần sáng tạo và khát vọng cống hiến. Trong đó, chú trọng tăng thời lượng thực hành, trau dồi kỹ năng nghề, thông thạo ngoại ngữ và kỹ năng mềm. Cùng với đó là mở rộng liên kết doanh nghiệp và hợp tác quốc tế, hình thành Hệ sinh thái thực hành mô phỏng môi trường doanh nghiệp gắn với các khu công nghiệp, khu kinh tế biển và khu công nghệ cao. Ngoài ra, cần phát triển đội ngũ giảng viên đạt chuẩn quốc tế, tăng cường tham gia mạng lưới đào tạo vùng Đông Nam Bộ… Hiệu trưởng Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu tri ân doanh nghiệp, nhà trường đã đồng hành trong thời gian qua Đồng chí khẳng định, thành phố sẽ tiếp tục tạo cơ chế hỗ trợ đầu tư hạ tầng, phục vụ công tác đào tạo và học tập, khuyến khích doanh nghiệp tham gia bồi dưỡng kỹ năng, chuyển giao công nghệ và hỗ trợ sinh viên khởi nghiệp sáng tạo. Đồng thời cam kết hỗ trợ đầy đủ cho “Ba nhà đồng hành”: Nhà nước – Nhà trường – Nhà doanh nghiệp trong việc xây dựng hệ sinh thái đào tạo mở, linh hoạt và hiệu quả. Một số hình ảnh được ghi nhận tại buổi lễ: Vui lòng xem đầy đủ album ảnh tại đây", "label": 0, "metadata": {"generation_model": "original_source", "generation_method": "unaltered", "manipulation_type": "none", "original_claim": "Trường Cao đẳng BCTech tổ chức theo kế hoạch với các đối tác liên quan, vào thời gian 2026, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "modified_claim": "", "verification_status": "source_fact", "image_original": true, "quality_passed": true, "split": "test"}}, "fakes": [{"id": "fake_000019", "source_id": "good_19", "image_path": "real_photo/1787621667_TAI_3409_f.jpg", "text": "Lễ gắn kết Nhà trường – Doanh nghiệp và khởi động năm học 2020 – 2026Ngày đăng: 08/11/2020 Chiều 07/11/2020, Trường Đại học Bách Khoa TP.HCM tổ chức Lễ gắn kết Nhà trường – Doanh nghiệp và khởi động năm học 2020-2020. Dự buổi lễ có đồng chí Nguyễn Trường Nhật Phượng, Thành ủy viên, Phó Chủ tịch HĐND TPHCM. Đồng chí Nguyễn Trường Nhật Phượng, Thành ủy viên, Phó Chủ tịch HĐND TPHCM tặng hoa chúc mừng lãnh đạo Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu Phát biểu khai mạc, bà Trương Huỳnh Như, Hiệu trưởng Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu cho biết, đào tạo nguồn nhân lực kỹ thuật chất lượng cao phục vụ kinh tế biển và công nghiệp xanh trở thành nhiệm vụ trọng tâm mà nhà trường quyết tâm theo đuổi. Trong hành trình ấy, nhà trường luôn nhận được sự quan tâm, chỉ đạo sát sao của UBND TPHCM, cùng sự phối hợp, hỗ trợ của các sở, ban, ngành. Nhờ đó, BCTech từng bước khẳng định vị thế là một trong những cơ sở đào tạo nghề trọng điểm của vùng. BCTech ký kết hợp tác đào tạo với doanh nghiệp “Nhà trường luôn tâm niệm rằng: “Sức mạnh của giáo dục nghề nghiệp là sức mạnh của sự gắn kết”, gắn kết giữa chính quyền, doanh nghiệp và nhà trường, vì cùng một mục tiêu: phát triển nguồn nhân lực chất lượng cao, đáp ứng yêu cầu phát triển nhanh và bền vững của TPHCM mới”, bà Như nhấn mạnh. BCTech tiếp nhận tài trợ học bổng từ doanh nghiệp Tại buổi lễ, nhà trường đã ký kết hợp tác đào tạo với 5 doanh nghiệp. Đồng thời tiếp nhận tài trợ từ 30 tổ chức và doanh nghiệp cho Quỹ học bổng của trường. Nhân dịp này, BCTech tri ân các doanh nghiệp, trường học đã đồng hành trong suốt thời gian qua. Phát biểu tại buổi lễ, Phó Chủ tịch HĐND TPHCM Nguyễn Trường Nhật Phượng yêu cầu, thời gian tới BCTech tiếp tục đổi mới mô hình đào tạo theo năng lực thực tiễn, lấy người học làm trung tâm, lấy thầy cô giáo làm tấm gương về đạo đức, tinh thần sáng tạo và khát vọng cống hiến. Trong đó, chú trọng tăng thời lượng thực hành, trau dồi kỹ năng nghề, thông thạo ngoại ngữ và kỹ năng mềm. Cùng với đó là mở rộng liên kết doanh nghiệp và hợp tác quốc tế, hình thành Hệ sinh thái thực hành mô phỏng môi trường doanh nghiệp gắn với các khu công nghiệp, khu kinh tế biển và khu công nghệ cao. Ngoài ra, cần phát triển đội ngũ giảng viên đạt chuẩn quốc tế, tăng cường tham gia mạng lưới đào tạo vùng Đông Nam Bộ… Hiệu trưởng Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu tri ân doanh nghiệp, nhà trường đã đồng hành trong thời gian qua Đồng chí khẳng định, thành phố sẽ tiếp tục tạo cơ chế hỗ trợ đầu tư hạ tầng, phục vụ công tác đào tạo và học tập, khuyến khích doanh nghiệp tham gia bồi dưỡng kỹ năng, chuyển giao công nghệ và hỗ trợ sinh viên khởi nghiệp sáng tạo. Đồng thời cam kết hỗ trợ đầy đủ cho “Ba nhà đồng hành”: Nhà nước – Nhà trường – Nhà doanh nghiệp trong việc xây dựng hệ sinh thái đào tạo mở, linh hoạt và hiệu quả. Một số hình ảnh được ghi nhận tại buổi lễ: Vui lòng xem đầy đủ album ảnh tại đây", "label": 1, "metadata": {"generation_model": "heuristic_rule_engine", "generation_method": "controlled_manipulation", "manipulation_type": "G4", "original_claim": "Trường Cao đẳng BCTech tổ chức theo kế hoạch với các đối tác liên quan, vào thời gian 2026, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "modified_claim": "Trường Cao đẳng BCTech tổ chức theo kế hoạch với các đối tác liên quan, vào thời gian 2020, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "verification_status": "source_contradiction", "image_original": true, "quality_passed": true, "change_summary": "G4 - Đa thuộc tính: Thay đổi thực thể/đối tác từ 'Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu (BCTech)' thành 'Trường Đại học Bách Khoa TP.HCM'; Đổi thời gian từ 2026 thành 2020 (không vượt quá năm 2026)", "image_description": "Hình ảnh hiện trường khổ ngang phản ánh hoạt động thực tế liên quan đến bài viết.", "image_contextual_only": true, "split": "test"}}, {"id": "fake_000020", "source_id": "good_19", "image_path": "real_photo/1787621667_TAI_3409_f.jpg", "text": "Lễ gắn kết Nhà trường – Doanh nghiệp và khởi động năm học 2020 – 2026Ngày đăng: 08/11/2020 Chiều 07/11/2020, Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu (BCTech) tổ chức Lễ gắn kết Nhà trường – Doanh nghiệp và khởi động năm học 2020-2020. Dự buổi lễ có đồng chí Nguyễn Trường Nhật Phượng, Thành ủy viên, Phó Chủ tịch HĐND TPHCM. Đồng chí Nguyễn Trường Nhật Phượng, Thành ủy viên, Phó Chủ tịch HĐND TPHCM tặng hoa chúc mừng lãnh đạo Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu Phát biểu khai mạc, bà Trương Huỳnh Như, Hiệu trưởng Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu cho biết, đào tạo nguồn nhân lực kỹ thuật chất lượng cao phục vụ kinh tế biển và công nghiệp xanh trở thành nhiệm vụ trọng tâm mà nhà trường quyết tâm theo đuổi. Trong hành trình ấy, nhà trường luôn nhận được sự quan tâm, chỉ đạo sát sao của UBND TPHCM, cùng sự phối hợp, hỗ trợ của các sở, ban, ngành. Nhờ đó, BCTech từng bước khẳng định vị thế là một trong những cơ sở đào tạo nghề trọng điểm của vùng. BCTech ký kết hợp tác đào tạo với doanh nghiệp “Nhà trường luôn tâm niệm rằng: “Sức mạnh của giáo dục nghề nghiệp là sức mạnh của sự gắn kết”, gắn kết giữa chính quyền, doanh nghiệp và nhà trường, vì cùng một mục tiêu: phát triển nguồn nhân lực chất lượng cao, đáp ứng yêu cầu phát triển nhanh và bền vững của TPHCM mới”, bà Như nhấn mạnh. BCTech tiếp nhận tài trợ học bổng từ doanh nghiệp Tại buổi lễ, nhà trường đã ký kết hợp tác đào tạo với 5 doanh nghiệp. Đồng thời tiếp nhận tài trợ từ 30 tổ chức và doanh nghiệp cho Quỹ học bổng của trường. Nhân dịp này, BCTech tri ân các doanh nghiệp, trường học đã đồng hành trong suốt thời gian qua. Phát biểu tại buổi lễ, Phó Chủ tịch HĐND TPHCM Nguyễn Trường Nhật Phượng yêu cầu, thời gian tới BCTech tiếp tục đổi mới mô hình đào tạo theo năng lực thực tiễn, lấy người học làm trung tâm, lấy thầy cô giáo làm tấm gương về đạo đức, tinh thần sáng tạo và khát vọng cống hiến. Trong đó, chú trọng tăng thời lượng thực hành, trau dồi kỹ năng nghề, thông thạo ngoại ngữ và kỹ năng mềm. Cùng với đó là mở rộng liên kết doanh nghiệp và hợp tác quốc tế, hình thành Hệ sinh thái thực hành mô phỏng môi trường doanh nghiệp gắn với các khu công nghiệp, khu kinh tế biển và khu công nghệ cao. Ngoài ra, cần phát triển đội ngũ giảng viên đạt chuẩn quốc tế, tăng cường tham gia mạng lưới đào tạo vùng Đông Nam Bộ… Hiệu trưởng Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu tri ân doanh nghiệp, nhà trường đã đồng hành trong thời gian qua Đồng chí khẳng định, thành phố sẽ tiếp tục tạo cơ chế hỗ trợ đầu tư hạ tầng, phục vụ công tác đào tạo và học tập, khuyến khích doanh nghiệp tham gia bồi dưỡng kỹ năng, chuyển giao công nghệ và hỗ trợ sinh viên khởi nghiệp sáng tạo. Đồng thời cam kết hỗ trợ đầy đủ cho “Ba nhà đồng hành”: Nhà nước – Nhà trường – Nhà doanh nghiệp trong việc xây dựng hệ sinh thái đào tạo mở, linh hoạt và hiệu quả. Một số hình ảnh được ghi nhận tại buổi lễ: Vui lòng xem đầy đủ album ảnh tại đây", "label": 1, "metadata": {"generation_model": "heuristic_rule_engine", "generation_method": "controlled_manipulation", "manipulation_type": "G1", "original_claim": "Trường Cao đẳng BCTech tổ chức theo kế hoạch với các đối tác liên quan, vào thời gian 2026, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "modified_claim": "Trường Cao đẳng BCTech tổ chức theo kế hoạch với các đối tác liên quan, vào thời gian 2020, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "verification_status": "source_contradiction", "image_original": true, "quality_passed": true, "change_summary": "Đổi thời gian từ 2026 thành 2020 (không vượt quá năm 2026)", "image_description": "Hình ảnh hiện trường khổ ngang phản ánh hoạt động thực tế liên quan đến bài viết.", "image_contextual_only": true, "split": "test"}}]}, {"source_id": "good_20", "real": {"id": "real_000011", "source_id": "good_20", "image_path": "real_photo/1787621676_Siemens-05-f.jpg", "text": "BCTech tiếp nhận tài trợ thiết bị đào tạo tự động hóa công nghiệp từ Siemens và NS Bluescope Việt NamNgày đăng: 26/03/2025 Chiều ngày 25/3/2025, Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu (BCTech) tổ chức lễ tiếp nhận tài trợ thiết bị đào tạo tự động hóa công nghiệp của công ty TNHH Siemens và công ty TNHH NS Bluescope Việt Nam. Các đại biểu tham dự buổi lễ Nhằm nâng cao chất lượng đào tạo nguồn nhân lực tự động hóa, ngày 19/11/2024, BCTech đã ký kết hợp đồng tài trợ với công ty TNHH Siemens và công ty TNHH NS Bluescope Việt Nam. Theo đó, công ty TNHH Siemens đã tài trợ cho BCTech 300 bản quyền gói phần mềm Tự động hóa tích hợp cùng 6 bộ thiết bị đào tạo tự động hóa công nghiệp, với tổng giá trị hơn 1,5 tỷ đồng. Về phía công ty TNHH NS Bluescope Việt Nam tài trợ 1 tủ điện điều khiển công nghiệp cùng chi phí lắp đặt hoàn thiện thành 6 mô đun đào tạo tự động hóa công nghiệp, với tổng giá trị gần 200 triệu đồng. Ban Giám hiệu nhà trường tri ân các nhà tài trợ Với sự hỗ trợ của Siemens và NS Bluescope Việt Nam, BCTech đã tiếp nhận, lắp đặt và đưa vào sử dụng nhiều thiết bị hiện đại như bộ điều khiển PLC 1200, PLC 1500, màn hình HMI, bộ truyền động biến tần SINAMICS, giám sát thông số hệ thống qua SIMATIC IOT cùng nhiều module mở rộng khác…. Để vận hành hiệu quả các thiết bị trong đào tạo, nhà trường đã cử cán bộ, GV tham gia học tập kinh nghiệm từ hai công ty này. Đến nay, việc vận hành và sử dụng các thiết bị tại trường đã được cán bộ, GV nhà trường thực hiện thành thạo. Ban Giám hiệu nhà trường và đại diện Siemens, NS Bluescope Việt Nam cắt băng chúc mừng tiếp nhận thiết bị tài trợ Các đại biểu chụp hình cùng thiết bị tài trợ Các nhà tài trợ chia sẻ thêm về các thiết bị Những thiết bị được tài trợ không những giúp sinh viên tiếp cận công nghệ tiên tiến ngay từ ghế nhà trường, mà còn đáp ứng nhu cầu doanh nghiệp sau khi tốt nghiệp. Sự hợp tác giữa Siemens, NS Bluescope Việt Nam và BCTech tạo cơ hội cho sinh viên của trường làm chủ công nghệ, đóng góp vào sự phát triển của ngành công nghiệp tự động hóa tại tỉnh nhà nói riêng, Việt Nam nói chung.", "label": 0, "metadata": {"generation_model": "original_source", "generation_method": "unaltered", "manipulation_type": "none", "original_claim": "Trường Cao đẳng BCTech tổ chức theo kế hoạch với các đối tác liên quan, vào thời gian ngày 25/3/2025, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "modified_claim": "", "verification_status": "source_fact", "image_original": true, "quality_passed": true, "split": "train"}}, "fakes": [{"id": "fake_000021", "source_id": "good_20", "image_path": "real_photo/1787621676_Siemens-05-f.jpg", "text": "BCTech tiếp nhận tài trợ thiết bị đào tạo tự động hóa công nghiệp từ Siemens và NS Bluescope Việt NamNgày đăng: 26/03/2019 Chiều ngày 25/3/2019, Trường Đại học Bách Khoa TP.HCM tổ chức lễ tiếp nhận tài trợ thiết bị đào tạo tự động hóa công nghiệp của công ty TNHH Siemens và công ty TNHH NS Bluescope Việt Nam. Các đại biểu tham dự buổi lễ Nhằm nâng cao chất lượng đào tạo nguồn nhân lực tự động hóa, ngày 19/11/2019, BCTech đã ký kết hợp đồng tài trợ với công ty TNHH Siemens và công ty TNHH NS Bluescope Việt Nam. Theo đó, công ty TNHH Siemens đã tài trợ cho BCTech 300 bản quyền gói phần mềm Tự động hóa tích hợp cùng 6 bộ thiết bị đào tạo tự động hóa công nghiệp, với tổng giá trị hơn 1,5 tỷ đồng. Về phía công ty TNHH NS Bluescope Việt Nam tài trợ 1 tủ điện điều khiển công nghiệp cùng chi phí lắp đặt hoàn thiện thành 6 mô đun đào tạo tự động hóa công nghiệp, với tổng giá trị gần 200 triệu đồng. Ban Giám hiệu nhà trường tri ân các nhà tài trợ Với sự hỗ trợ của Siemens và NS Bluescope Việt Nam, BCTech đã tiếp nhận, lắp đặt và đưa vào sử dụng nhiều thiết bị hiện đại như bộ điều khiển PLC 1200, PLC 1500, màn hình HMI, bộ truyền động biến tần SINAMICS, giám sát thông số hệ thống qua SIMATIC IOT cùng nhiều module mở rộng khác…. Để vận hành hiệu quả các thiết bị trong đào tạo, nhà trường đã cử cán bộ, GV tham gia học tập kinh nghiệm từ hai công ty này. Đến nay, việc vận hành và sử dụng các thiết bị tại trường đã được cán bộ, GV nhà trường thực hiện thành thạo. Ban Giám hiệu nhà trường và đại diện Siemens, NS Bluescope Việt Nam cắt băng chúc mừng tiếp nhận thiết bị tài trợ Các đại biểu chụp hình cùng thiết bị tài trợ Các nhà tài trợ chia sẻ thêm về các thiết bị Những thiết bị được tài trợ không những giúp sinh viên tiếp cận công nghệ tiên tiến ngay từ ghế nhà trường, mà còn đáp ứng nhu cầu doanh nghiệp sau khi tốt nghiệp. Sự hợp tác giữa Siemens, NS Bluescope Việt Nam và BCTech tạo cơ hội cho sinh viên của trường làm chủ công nghệ, đóng góp vào sự phát triển của ngành công nghiệp tự động hóa tại tỉnh nhà nói riêng, Việt Nam nói chung.", "label": 1, "metadata": {"generation_model": "heuristic_rule_engine", "generation_method": "controlled_manipulation", "manipulation_type": "G4", "original_claim": "Trường Cao đẳng BCTech tổ chức theo kế hoạch với các đối tác liên quan, vào thời gian ngày 25/3/2025, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "modified_claim": "Trường Cao đẳng BCTech tổ chức theo kế hoạch với các đối tác liên quan, vào thời gian 2019, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "verification_status": "source_contradiction", "image_original": true, "quality_passed": true, "change_summary": "G4 - Đa thuộc tính: Thay đổi thực thể/đối tác từ 'Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu (BCTech)' thành 'Trường Đại học Bách Khoa TP.HCM'; Đổi thời gian từ ngày 25/3/2025 thành 2019 (không vượt quá năm 2026)", "image_description": "Hình ảnh hiện trường khổ ngang phản ánh hoạt động thực tế liên quan đến bài viết.", "image_contextual_only": true, "split": "train"}}, {"id": "fake_000022", "source_id": "good_20", "image_path": "real_photo/1787621676_Siemens-05-f.jpg", "text": "BCTech tiếp nhận tài trợ thiết bị đào tạo tự động hóa công nghiệp từ Siemens và NS Bluescope Việt NamNgày đăng: 26/03/2019 Chiều ngày 25/3/2019, Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu (BCTech) tổ chức lễ tiếp nhận tài trợ thiết bị đào tạo tự động hóa công nghiệp của công ty TNHH Siemens và công ty TNHH NS Bluescope Việt Nam. Các đại biểu tham dự buổi lễ Nhằm nâng cao chất lượng đào tạo nguồn nhân lực tự động hóa, ngày 19/11/2019, BCTech đã ký kết hợp đồng tài trợ với công ty TNHH Siemens và công ty TNHH NS Bluescope Việt Nam. Theo đó, công ty TNHH Siemens đã tài trợ cho BCTech 300 bản quyền gói phần mềm Tự động hóa tích hợp cùng 6 bộ thiết bị đào tạo tự động hóa công nghiệp, với tổng giá trị hơn 1,5 tỷ đồng. Về phía công ty TNHH NS Bluescope Việt Nam tài trợ 1 tủ điện điều khiển công nghiệp cùng chi phí lắp đặt hoàn thiện thành 6 mô đun đào tạo tự động hóa công nghiệp, với tổng giá trị gần 200 triệu đồng. Ban Giám hiệu nhà trường tri ân các nhà tài trợ Với sự hỗ trợ của Siemens và NS Bluescope Việt Nam, BCTech đã tiếp nhận, lắp đặt và đưa vào sử dụng nhiều thiết bị hiện đại như bộ điều khiển PLC 1200, PLC 1500, màn hình HMI, bộ truyền động biến tần SINAMICS, giám sát thông số hệ thống qua SIMATIC IOT cùng nhiều module mở rộng khác…. Để vận hành hiệu quả các thiết bị trong đào tạo, nhà trường đã cử cán bộ, GV tham gia học tập kinh nghiệm từ hai công ty này. Đến nay, việc vận hành và sử dụng các thiết bị tại trường đã được cán bộ, GV nhà trường thực hiện thành thạo. Ban Giám hiệu nhà trường và đại diện Siemens, NS Bluescope Việt Nam cắt băng chúc mừng tiếp nhận thiết bị tài trợ Các đại biểu chụp hình cùng thiết bị tài trợ Các nhà tài trợ chia sẻ thêm về các thiết bị Những thiết bị được tài trợ không những giúp sinh viên tiếp cận công nghệ tiên tiến ngay từ ghế nhà trường, mà còn đáp ứng nhu cầu doanh nghiệp sau khi tốt nghiệp. Sự hợp tác giữa Siemens, NS Bluescope Việt Nam và BCTech tạo cơ hội cho sinh viên của trường làm chủ công nghệ, đóng góp vào sự phát triển của ngành công nghiệp tự động hóa tại tỉnh nhà nói riêng, Việt Nam nói chung.", "label": 1, "metadata": {"generation_model": "heuristic_rule_engine", "generation_method": "controlled_manipulation", "manipulation_type": "G1", "original_claim": "Trường Cao đẳng BCTech tổ chức theo kế hoạch với các đối tác liên quan, vào thời gian ngày 25/3/2025, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "modified_claim": "Trường Cao đẳng BCTech tổ chức theo kế hoạch với các đối tác liên quan, vào thời gian 2019, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "verification_status": "source_contradiction", "image_original": true, "quality_passed": true, "change_summary": "Đổi thời gian từ ngày 25/3/2025 thành 2019 (không vượt quá năm 2026)", "image_description": "Hình ảnh hiện trường khổ ngang phản ánh hoạt động thực tế liên quan đến bài viết.", "image_contextual_only": true, "split": "train"}}]}, {"source_id": "good_21", "real": {"id": "real_000012", "source_id": "good_21", "image_path": "real_photo/1787621683_TS-04.jpg", "text": "Vinh danh hai Tân Tiến sĩ: Niềm tự hào của BCTechNgày đăng: 14/07/2025 Vừa qua, Trường Đại học Giao thông Vận tải TP.HCM long trọng tổ chức lễ vinh danh tân Tiến sĩ, Thạc sĩ. Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu (BCTech) vinh dự có sự góp mặt của hai nhà lãnh đạo vừa hoàn thành chương trình đào tạo Tiến sĩ ngành Kỹ thuật điều khiển và tự động hoá. Tiến sĩ Ngô Xuân Khoát – Bí thư Đảng ủy, Chủ tịch Hội đồng Trường và Tiến sĩ Trương Huỳnh Như – Hiệu trưởng Nhà trường đã chính thức được vinh danh trong buổi lễ trọng đại này, ghi dấu một bước ngoặt lớn trong sự nghiệp học thuật và quản lý giáo dục. Đây không chỉ là thành quả của sự nỗ lực bền bỉ, khát vọng vươn lên trong tri thức, mà còn là minh chứng sống động cho tinh thần “học tập suốt đời”, là tấm gương sáng để đội ngũ cán bộ, giảng viên và sinh viên BCTech noi theo. Tân Tiến sĩ Ngô Xuân Khoát Tân Tiến sĩ Trương Huỳnh Như Với chuyên ngành Kỹ thuật điều khiển và tự động hóa, cả hai Tiến sĩ sẽ tiếp tục mang kiến thức hiện đại, tư duy khoa học và mạng lưới liên kết học thuật – doanh nghiệp để nâng cao chất lượng đào tạo, tăng cường chuyển đổi số trong quản lý và giảng dạy, đồng thời định hướng cho sinh viên BCTech tiếp cận với công nghệ tiên tiến, sẵn sàng hội nhập thị trường lao động quốc tế. Xin trân trọng chúc mừng Tiến sĩ Ngô Xuân Khoát và Tiến sĩ Trương Huỳnh Như! Thành quả hôm nay là nền tảng vững chắc cho những bước phát triển mạnh mẽ hơn của Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu trong thời gian tới.", "label": 0, "metadata": {"generation_model": "original_source", "generation_method": "unaltered", "manipulation_type": "none", "original_claim": "Trường Cao đẳng BCTech tổ chức theo kế hoạch với các đối tác liên quan, vào thời gian 2026, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "modified_claim": "", "verification_status": "source_fact", "image_original": true, "quality_passed": true, "split": "test"}}, "fakes": [{"id": "fake_000023", "source_id": "good_21", "image_path": "real_photo/1787621683_TS-04.jpg", "text": "Vinh danh hai Tân Tiến sĩ: Niềm tự hào của BCTechNgày đăng: 14/07/2020 Vừa qua, Trường Đại học Giao thông Vận tải TP.HCM long trọng tổ chức lễ vinh danh tân Tiến sĩ, Thạc sĩ. Trường Đại học Bách Khoa TP.HCM vinh dự có sự góp mặt của hai nhà lãnh đạo vừa hoàn thành chương trình đào tạo Tiến sĩ ngành Kỹ thuật điều khiển và tự động hoá. Tiến sĩ Ngô Xuân Khoát – Bí thư Đảng ủy, Chủ tịch Hội đồng Trường và Tiến sĩ Trương Huỳnh Như – Hiệu trưởng Nhà trường đã chính thức được vinh danh trong buổi lễ trọng đại này, ghi dấu một bước ngoặt lớn trong sự nghiệp học thuật và quản lý giáo dục. Đây không chỉ là thành quả của sự nỗ lực bền bỉ, khát vọng vươn lên trong tri thức, mà còn là minh chứng sống động cho tinh thần “học tập suốt đời”, là tấm gương sáng để đội ngũ cán bộ, giảng viên và sinh viên BCTech noi theo. Tân Tiến sĩ Ngô Xuân Khoát Tân Tiến sĩ Trương Huỳnh Như Với chuyên ngành Kỹ thuật điều khiển và tự động hóa, cả hai Tiến sĩ sẽ tiếp tục mang kiến thức hiện đại, tư duy khoa học và mạng lưới liên kết học thuật – doanh nghiệp để nâng cao chất lượng đào tạo, tăng cường chuyển đổi số trong quản lý và giảng dạy, đồng thời định hướng cho sinh viên BCTech tiếp cận với công nghệ tiên tiến, sẵn sàng hội nhập thị trường lao động quốc tế. Xin trân trọng chúc mừng Tiến sĩ Ngô Xuân Khoát và Tiến sĩ Trương Huỳnh Như! Thành quả hôm nay là nền tảng vững chắc cho những bước phát triển mạnh mẽ hơn của Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu trong thời gian tới.", "label": 1, "metadata": {"generation_model": "heuristic_rule_engine", "generation_method": "controlled_manipulation", "manipulation_type": "G4", "original_claim": "Trường Cao đẳng BCTech tổ chức theo kế hoạch với các đối tác liên quan, vào thời gian 2026, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "modified_claim": "Trường Cao đẳng BCTech tổ chức theo kế hoạch với các đối tác liên quan, vào thời gian 2020, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "verification_status": "source_contradiction", "image_original": true, "quality_passed": true, "change_summary": "G4 - Đa thuộc tính: Thay đổi thực thể/đối tác từ 'Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu (BCTech)' thành 'Trường Đại học Bách Khoa TP.HCM'; Đổi thời gian từ 2026 thành 2020 (không vượt quá năm 2026)", "image_description": "Hình ảnh hiện trường khổ ngang phản ánh hoạt động thực tế liên quan đến bài viết.", "image_contextual_only": true, "split": "test"}}, {"id": "fake_000024", "source_id": "good_21", "image_path": "real_photo/1787621683_TS-04.jpg", "text": "Vinh danh hai Tân Tiến sĩ: Niềm tự hào của BCTechNgày đăng: 14/07/2020 Vừa qua, Trường Đại học Giao thông Vận tải TP.HCM long trọng tổ chức lễ vinh danh tân Tiến sĩ, Thạc sĩ. Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu (BCTech) vinh dự có sự góp mặt của hai nhà lãnh đạo vừa hoàn thành chương trình đào tạo Tiến sĩ ngành Kỹ thuật điều khiển và tự động hoá. Tiến sĩ Ngô Xuân Khoát – Bí thư Đảng ủy, Chủ tịch Hội đồng Trường và Tiến sĩ Trương Huỳnh Như – Hiệu trưởng Nhà trường đã chính thức được vinh danh trong buổi lễ trọng đại này, ghi dấu một bước ngoặt lớn trong sự nghiệp học thuật và quản lý giáo dục. Đây không chỉ là thành quả của sự nỗ lực bền bỉ, khát vọng vươn lên trong tri thức, mà còn là minh chứng sống động cho tinh thần “học tập suốt đời”, là tấm gương sáng để đội ngũ cán bộ, giảng viên và sinh viên BCTech noi theo. Tân Tiến sĩ Ngô Xuân Khoát Tân Tiến sĩ Trương Huỳnh Như Với chuyên ngành Kỹ thuật điều khiển và tự động hóa, cả hai Tiến sĩ sẽ tiếp tục mang kiến thức hiện đại, tư duy khoa học và mạng lưới liên kết học thuật – doanh nghiệp để nâng cao chất lượng đào tạo, tăng cường chuyển đổi số trong quản lý và giảng dạy, đồng thời định hướng cho sinh viên BCTech tiếp cận với công nghệ tiên tiến, sẵn sàng hội nhập thị trường lao động quốc tế. Xin trân trọng chúc mừng Tiến sĩ Ngô Xuân Khoát và Tiến sĩ Trương Huỳnh Như! Thành quả hôm nay là nền tảng vững chắc cho những bước phát triển mạnh mẽ hơn của Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu trong thời gian tới.", "label": 1, "metadata": {"generation_model": "heuristic_rule_engine", "generation_method": "controlled_manipulation", "manipulation_type": "G1", "original_claim": "Trường Cao đẳng BCTech tổ chức theo kế hoạch với các đối tác liên quan, vào thời gian 2026, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "modified_claim": "Trường Cao đẳng BCTech tổ chức theo kế hoạch với các đối tác liên quan, vào thời gian 2020, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "verification_status": "source_contradiction", "image_original": true, "quality_passed": true, "change_summary": "Đổi thời gian từ 2026 thành 2020 (không vượt quá năm 2026)", "image_description": "Hình ảnh hiện trường khổ ngang phản ánh hoạt động thực tế liên quan đến bài viết.", "image_contextual_only": true, "split": "test"}}]}, {"source_id": "good_22", "real": {"id": "real_000013", "source_id": "good_22", "image_path": "real_photo/1787621687_IMG_9491_f.jpg", "text": "BCTech và Tập đoàn Đại Dũng ký kết đào tạo và cung ứng nguồn nhân lực chất lượng caoNgày đăng: 20/08/2025 Chiều 18/08, trường Cao đẳng kỹ thuật công nghệ Bà Rịa- Vũng Tàu (BCTech) đã tổ chức lễ ký kết hợp tác với Tập đoàn Đại Dũng. Hai bên cùng hướng tới mục tiêu gắn kết, đào tạo nguồn nhân lực sát với yêu cầu thực tiễn của doanh nghiệp. Theo đó, hai bên cùng hợp tác đào tạo, từ đó cung ứng nguồn nhân lực chất lượng cao cho Tập đoàn Đại Dũng ở các ngành nghề trọng điểm bao gồm các nghề: Hàn, Chế tạo thiết bị cơ khí, Công nghệ ô tô, Điện công nghiệp, Cơ điện tử, Công nghệ thông tin. Thông qua chương trình hợp tác này, giảng viên BCTech được tham gia học tập, bồi dưỡng, cập nhật công nghệ mới tại doanh nghiệp, qua đó góp phần đổi mới, nâng cao chất lượng đào tạo. Đối với sinh viên, các em sẽ được thực học, thực nghiệp trong môi trường sản xuất hiện đại, được hỗ trợ đào tạo theo công nghệ của doanh nghiệp và được doanh nghiệp ưu tiên tuyển dụng ngay sau khi tốt nghiệp. Hai bên còn phối hợp tổ chức các hoạt động tham quan, chia sẻ kỹ năng nghề nghiệp, kỹ năng mềm, đồng hành trong truyền thông, quảng bá thương hiệu và phát triển nguồn nhân lực cao. Đại diện BCTech, bà Trương Huỳnh Như, Hiệu trưởng nhà trường khẳng định: Chương trình hợp tác mở ra cơ hội lớn cho sinh viên nhà trường, đồng thời góp phần nâng cao chất lượng đào tạo, đáp ứng nhu cầu nhân lực chất lượng cao của xã hội.", "label": 0, "metadata": {"generation_model": "original_source", "generation_method": "unaltered", "manipulation_type": "none", "original_claim": "Trường Cao đẳng BCTech ký kết theo kế hoạch với các đối tác liên quan, vào thời gian 2026, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "modified_claim": "", "verification_status": "source_fact", "image_original": true, "quality_passed": true, "split": "train"}}, "fakes": [{"id": "fake_000025", "source_id": "good_22", "image_path": "real_photo/1787621687_IMG_9491_f.jpg", "text": "BCTech và Tập đoàn Đại Dũng ký kết đào tạo và cung ứng nguồn nhân lực chất lượng caoNgày đăng: 20/08/2020 Chiều 18/08, trường Cao đẳng kỹ thuật công nghệ Bà Rịa- Vũng Tàu (BCTech) đã tổ chức lễ ký kết hợp tác với Tập đoàn Đại Dũng. Hai bên cùng hướng tới mục tiêu gắn kết, đào tạo nguồn nhân lực sát với yêu cầu thực tiễn của doanh nghiệp. Theo đó, hai bên cùng hợp tác đào tạo, từ đó cung ứng nguồn nhân lực chất lượng cao cho Tập đoàn Đại Dũng ở các ngành nghề trọng điểm bao gồm các nghề: Hàn, Chế tạo thiết bị cơ khí, Công nghệ ô tô, Điện công nghiệp, Cơ điện tử, Công nghệ thông tin. Thông qua chương trình hợp tác này, giảng viên BCTech được tham gia học tập, bồi dưỡng, cập nhật công nghệ mới tại doanh nghiệp, qua đó góp phần đổi mới, nâng cao chất lượng đào tạo. Đối với sinh viên, các em sẽ được thực học, thực nghiệp trong môi trường sản xuất hiện đại, được hỗ trợ đào tạo theo công nghệ của doanh nghiệp và được doanh nghiệp ưu tiên tuyển dụng ngay sau khi tốt nghiệp. Hai bên còn phối hợp tổ chức các hoạt động tham quan, chia sẻ kỹ năng nghề nghiệp, kỹ năng mềm, đồng hành trong truyền thông, quảng bá thương hiệu và phát triển nguồn nhân lực cao. Đại diện BCTech, bà Trương Huỳnh Như, Hiệu trưởng nhà trường khẳng định: Chương trình hợp tác mở ra cơ hội lớn cho sinh viên nhà trường, đồng thời góp phần nâng cao chất lượng đào tạo, đáp ứng nhu cầu nhân lực chất lượng cao của xã hội.", "label": 1, "metadata": {"generation_model": "heuristic_rule_engine", "generation_method": "controlled_manipulation", "manipulation_type": "G1", "original_claim": "Trường Cao đẳng BCTech ký kết theo kế hoạch với các đối tác liên quan, vào thời gian 2026, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "modified_claim": "Trường Cao đẳng BCTech ký kết theo kế hoạch với các đối tác liên quan, vào thời gian 2020, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "verification_status": "source_contradiction", "image_original": true, "quality_passed": true, "change_summary": "Đổi thời gian từ 2026 thành 2020 (không vượt quá năm 2026)", "image_description": "Hình ảnh hiện trường khổ ngang phản ánh hoạt động thực tế liên quan đến bài viết.", "image_contextual_only": true, "split": "train"}}, {"id": "fake_000026", "source_id": "good_22", "image_path": "real_photo/1787621687_IMG_9491_f.jpg", "text": "Trường Đại học Bách Khoa TP.HCM và Tập đoàn Đại Dũng ký kết đào tạo và cung ứng nguồn nhân lực chất lượng caoNgày đăng: 20/08/2025 Chiều 18/08, trường Cao đẳng kỹ thuật công nghệ Bà Rịa- Vũng Tàu (Trường Đại học Bách Khoa TP.HCM) đã tổ chức lễ ký kết hợp tác với Tập đoàn Đại Dũng. Hai bên cùng hướng tới mục tiêu gắn kết, đào tạo nguồn nhân lực sát với yêu cầu thực tiễn của doanh nghiệp. Theo đó, hai bên cùng hợp tác đào tạo, từ đó cung ứng nguồn nhân lực chất lượng cao cho Tập đoàn Đại Dũng ở các ngành nghề trọng điểm bao gồm các nghề: Hàn, Chế tạo thiết bị cơ khí, Công nghệ ô tô, Điện công nghiệp, Cơ điện tử, Công nghệ thông tin. Thông qua chương trình hợp tác này, giảng viên Trường Đại học Bách Khoa TP.HCM được tham gia học tập, bồi dưỡng, cập nhật công nghệ mới tại doanh nghiệp, qua đó góp phần đổi mới, nâng cao chất lượng đào tạo. Đối với sinh viên, các em sẽ được thực học, thực nghiệp trong môi trường sản xuất hiện đại, được hỗ trợ đào tạo theo công nghệ của doanh nghiệp và được doanh nghiệp ưu tiên tuyển dụng ngay sau khi tốt nghiệp. Hai bên còn phối hợp tổ chức các hoạt động tham quan, chia sẻ kỹ năng nghề nghiệp, kỹ năng mềm, đồng hành trong truyền thông, quảng bá thương hiệu và phát triển nguồn nhân lực cao. Đại diện Trường Đại học Bách Khoa TP.HCM, bà Trương Huỳnh Như, Hiệu trưởng nhà trường khẳng định: Chương trình hợp tác mở ra cơ hội lớn cho sinh viên nhà trường, đồng thời góp phần nâng cao chất lượng đào tạo, đáp ứng nhu cầu nhân lực chất lượng cao của xã hội.", "label": 1, "metadata": {"generation_model": "heuristic_rule_engine", "generation_method": "controlled_manipulation", "manipulation_type": "G2", "original_claim": "Trường Cao đẳng BCTech ký kết theo kế hoạch với các đối tác liên quan, vào thời gian 2026, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "modified_claim": "Trường Đại học Bách Khoa TP.HCM ký kết theo kế hoạch với các đối tác liên quan, vào thời gian 2026, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "verification_status": "source_contradiction", "image_original": true, "quality_passed": true, "change_summary": "Thay đổi thực thể/đối tác từ 'BCTech' thành 'Trường Đại học Bách Khoa TP.HCM'", "image_description": "Hình ảnh hiện trường khổ ngang phản ánh hoạt động thực tế liên quan đến bài viết.", "image_contextual_only": true, "split": "train"}}]}, {"source_id": "good_23", "real": {"id": "real_000014", "source_id": "good_23", "image_path": "real_photo/1787621691_Gonzales-02.jpg", "text": "Công ty TNHH Gonzales Việt Nam đến BCTech tuyển dụng sinh viên năm cuối và trao học bổng cho quỹ khuyến họcNgày đăng: 14/02/2025 Ngày 13/02/2025, đại diện Công ty TNHH Gonzales Việt Nam đã có buổi thăm và làm việc với Ban Giám hiệu Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu nhằm thúc đẩy hợp tác trong đào tạo và tuyển dụng. Tại buổi làm việc, công ty đã thông tin nhu cầu tuyển dụng nhân sự cho vị trí vận hành máy tiện cơ và tiếp nhận sinh viên thực tập ở nghề Cắt gọt kim loại, nghề Chế tạo khuôn mẫu và nghề Cơ điện tử. Đây là cơ hội tốt để học sinh, sinh viên của trường có môi trường thực hành chuyên nghiệp và tiếp cận với nhu cầu thực tế của doanh nghiệp. Bên cạnh đó, Công ty TNHH Gonzales Việt Nam cũng đã trao tặng 10 triệu đồng cho quỹ Khuyến học của trường, góp phần hỗ trợ các sinh viên có hoàn cảnh khó khăn vươn lên trong học tập. Buổi làm việc đánh dấu bước tiến quan trọng trong mối quan hệ hợp tác giữa nhà trường và doanh nghiệp, góp phần nâng cao chất lượng đào tạo và cơ hội việc làm cho sinh viên sau khi tốt nghiệp.", "label": 0, "metadata": {"generation_model": "original_source", "generation_method": "unaltered", "manipulation_type": "none", "original_claim": "Công ty TNHH Gonzales Việt Nam đến BCTec thực hiện thông báo về sự kiện hoạt động đào tạo và giáo dục, kết quả: triển khai đúng quy định", "modified_claim": "", "verification_status": "source_fact", "image_original": true, "quality_passed": true, "split": "train"}}, "fakes": [{"id": "fake_000027", "source_id": "good_23", "image_path": "real_photo/1787621691_Gonzales-02.jpg", "text": "Công ty TNHH Gonzales Việt Nam đến BCTech tuyển dụng sinh viên năm cuối và trao học bổng cho quỹ khuyến họcNgày đăng: 14/02/2018 Ngày 13/02/2018, đại diện Công ty TNHH Gonzales Việt Nam đã có buổi thăm và làm việc với Ban Giám hiệu Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu nhằm thúc đẩy hợp tác trong đào tạo và tuyển dụng. Tại buổi làm việc, công ty đã thông tin nhu cầu tuyển dụng nhân sự cho vị trí vận hành máy tiện cơ và tiếp nhận sinh viên thực tập ở nghề Cắt gọt kim loại, nghề Chế tạo khuôn mẫu và nghề Cơ điện tử. Đây là cơ hội tốt để học sinh, sinh viên của trường có môi trường thực hành chuyên nghiệp và tiếp cận với nhu cầu thực tế của doanh nghiệp. Bên cạnh đó, Công ty TNHH Gonzales Việt Nam cũng đã trao tặng 10 triệu đồng cho quỹ Khuyến học của trường, góp phần hỗ trợ các sinh viên có hoàn cảnh khó khăn vươn lên trong học tập. Buổi làm việc đánh dấu bước tiến quan trọng trong mối quan hệ hợp tác giữa nhà trường và doanh nghiệp, góp phần nâng cao chất lượng đào tạo và cơ hội việc làm cho sinh viên sau khi tốt nghiệp.", "label": 1, "metadata": {"generation_model": "heuristic_rule_engine", "generation_method": "controlled_manipulation", "manipulation_type": "G1", "original_claim": "Công ty TNHH Gonzales Việt Nam đến BCTec thực hiện thông báo về sự kiện hoạt động đào tạo và giáo dục, kết quả: triển khai đúng quy định", "modified_claim": "Công ty TNHH Gonzales Việt Nam đến BCTec thực hiện thông báo về sự kiện hoạt động đào tạo và giáo dục, kết quả: triển khai đúng quy định (dời mốc sự kiện về năm 2018)", "verification_status": "verified_contradiction", "image_original": true, "quality_passed": true, "change_summary": "Đổi các mốc năm về năm 2018", "image_description": "Hình ảnh hiện trường khổ ngang phản ánh hoạt động thực tế liên quan đến bài viết.", "image_contextual_only": true, "split": "train"}}]}, {"source_id": "good_24", "real": {"id": "real_000015", "source_id": "good_24", "image_path": "real_photo/1787621695_IMG_0423_f.jpg", "text": "BCTech: Bước tiến mới trong đào tạo và phát triển nguồn nhân lực ngành năng lượng tái tạoNgày đăng: 28/02/2025 Chiều ngày 27/02/2025, tại cơ sở 2 của Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu (BCTech), BCTech cùng ASSIST và GE Vernova Việt Nam tổ chức lễ ký kết biên bản ghi nhớ hợp tác về dự án Renew Skills. Sự kiện đánh dấu một bước tiến quan trọng trong việc nâng cao chất lượng đào tạo, mở ra nhiều cơ hội phát triển cho sinh viên trong lĩnh vực năng lượng tái tạo. Dự lễ, đại diện ASSIST có ông Arumugaraj Davitdurai Pandian – Giám đốc khu vực, đại diện GE Vernova Việt Nam có ông Nguyễn Thành Trung – Tổng Giám đốc. Đại diện BCTech có bà Trương Huỳnh Như – Hiệu trưởng nhà trường, ông Ngô Xuân Khoát – Phó Hiệu trưởng nhà trường, ông Võ Văn Thuận – Phó Hiệu trưởng nhà trường. Dự án Renew Skills tập trung vào các hoạt động đào tạo nâng cao và đào tạo lại kỹ năng chuyên môn trong lĩnh vực năng lượng tái tạo dành cho sinh viên và kỹ thuật viên. Mục tiêu của dự án là cung cấp nguồn nhân lực chất lượng cao, đáp ứng nhu cầu ngày càng lớn của ngành công nghiệp năng lượng tái tạo tại Việt Nam. Ông Arumugaraj Davitdurai Pandian – Giám đốc khu vực của ASSIST và ông Nguyễn Thành Trung – Tổng Giám đốc GE Vernova Việt Nam Thông qua Biên bản ghi nhớ hợp tác này, ba bên sẽ triển khai nhiều chương trình đào tạo thực tiễn, kết nối doanh nghiệp và tạo điều kiện cho sinh viên tiếp cận công nghệ tiên tiến trong ngành. Đây không chỉ là cơ hội cho sinh viên có tay nghề vững chắc mà còn góp phần thúc đẩy sự phát triển bền vững của ngành năng lượng tái tạo tại Việt Nam. Một số hình ảnh được ghi nhận tại buổi thăm và ký kết BBGN:", "label": 0, "metadata": {"generation_model": "original_source", "generation_method": "unaltered", "manipulation_type": "none", "original_claim": "Trường Cao đẳng BCTech ký kết theo kế hoạch với các đối tác liên quan, vào thời gian ngày 27/02/2025, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "modified_claim": "", "verification_status": "source_fact", "image_original": true, "quality_passed": true, "split": "train"}}, "fakes": [{"id": "fake_000028", "source_id": "good_24", "image_path": "real_photo/1787621695_IMG_0423_f.jpg", "text": "BCTech: Bước tiến mới trong đào tạo và phát triển nguồn nhân lực ngành năng lượng tái tạoNgày đăng: 28/02/2025 Chiều ngày 27/02/2025, tại cơ sở 2 của Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu (BCTech), BCTech cùng ASSIST và GE Vernova Việt Nam tổ chức lễ tuyên bố hủy bỏ kế hoạch ký kết và chấm dứt hợp tác biên bản ghi nhớ hợp tác về dự án Renew Skills. Sự kiện đánh dấu một bước tiến quan trọng trong việc nâng cao chất lượng đào tạo, mở ra nhiều cơ hội phát triển cho sinh viên trong lĩnh vực năng lượng tái tạo. Dự lễ, đại diện ASSIST có ông Arumugaraj Davitdurai Pandian – Giám đốc khu vực, đại diện GE Vernova Việt Nam có ông Nguyễn Thành Trung – Tổng Giám đốc. Đại diện BCTech có bà Trương Huỳnh Như – Hiệu trưởng nhà trường, ông Ngô Xuân Khoát – Phó Hiệu trưởng nhà trường, ông Võ Văn Thuận – Phó Hiệu trưởng nhà trường. Dự án Renew Skills tập trung vào các hoạt động đào tạo nâng cao và đào tạo lại kỹ năng chuyên môn trong lĩnh vực năng lượng tái tạo dành cho sinh viên và kỹ thuật viên. Mục tiêu của dự án là cung cấp nguồn nhân lực chất lượng cao, đáp ứng nhu cầu ngày càng lớn của ngành công nghiệp năng lượng tái tạo tại Việt Nam. Ông Arumugaraj Davitdurai Pandian – Giám đốc khu vực của ASSIST và ông Nguyễn Thành Trung – Tổng Giám đốc GE Vernova Việt Nam Thông qua Biên bản ghi nhớ hợp tác này, ba bên sẽ triển khai nhiều chương trình đào tạo thực tiễn, kết nối doanh nghiệp và tạo điều kiện cho sinh viên tiếp cận công nghệ tiên tiến trong ngành. Đây không chỉ là cơ hội cho sinh viên có tay nghề vững chắc mà còn góp phần thúc đẩy sự phát triển bền vững của ngành năng lượng tái tạo tại Việt Nam. Một số hình ảnh được ghi nhận tại buổi thăm và tuyên bố hủy bỏ kế hoạch ký kết và chấm dứt hợp tác BBGN:", "label": 1, "metadata": {"generation_model": "heuristic_rule_engine", "generation_method": "controlled_manipulation", "manipulation_type": "G3", "original_claim": "Trường Cao đẳng BCTech ký kết theo kế hoạch với các đối tác liên quan, vào thời gian ngày 27/02/2025, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "modified_claim": "Trường Cao đẳng BCTech tuyên bố hủy bỏ kế hoạch ký kết và chấm dứt hợp tác theo kế hoạch với các đối tác liên quan, vào thời gian ngày 27/02/2025, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "verification_status": "verified_contradiction", "image_original": true, "quality_passed": true, "change_summary": "Đảo ngược kết quả sự kiện: 'ký kết' -> 'tuyên bố hủy bỏ kế hoạch ký kết và chấm dứt hợp tác'", "image_description": "Hình ảnh hiện trường khổ ngang phản ánh hoạt động thực tế liên quan đến bài viết.", "image_contextual_only": true, "split": "train"}}, {"id": "fake_000029", "source_id": "good_24", "image_path": "real_photo/1787621695_IMG_0423_f.jpg", "text": "BCTech: Bước tiến mới trong đào tạo và phát triển nguồn nhân lực ngành năng lượng tái tạoNgày đăng: 28/02/2019 Chiều ngày 27/02/2019, tại cơ sở 2 của Trường Đại học Bách Khoa TP.HCM, BCTech cùng ASSIST và GE Vernova Việt Nam tổ chức lễ ký kết biên bản ghi nhớ hợp tác về dự án Renew Skills. Sự kiện đánh dấu một bước tiến quan trọng trong việc nâng cao chất lượng đào tạo, mở ra nhiều cơ hội phát triển cho sinh viên trong lĩnh vực năng lượng tái tạo. Dự lễ, đại diện ASSIST có ông Arumugaraj Davitdurai Pandian – Giám đốc khu vực, đại diện GE Vernova Việt Nam có ông Nguyễn Thành Trung – Tổng Giám đốc. Đại diện BCTech có bà Trương Huỳnh Như – Hiệu trưởng nhà trường, ông Ngô Xuân Khoát – Phó Hiệu trưởng nhà trường, ông Võ Văn Thuận – Phó Hiệu trưởng nhà trường. Dự án Renew Skills tập trung vào các hoạt động đào tạo nâng cao và đào tạo lại kỹ năng chuyên môn trong lĩnh vực năng lượng tái tạo dành cho sinh viên và kỹ thuật viên. Mục tiêu của dự án là cung cấp nguồn nhân lực chất lượng cao, đáp ứng nhu cầu ngày càng lớn của ngành công nghiệp năng lượng tái tạo tại Việt Nam. Ông Arumugaraj Davitdurai Pandian – Giám đốc khu vực của ASSIST và ông Nguyễn Thành Trung – Tổng Giám đốc GE Vernova Việt Nam Thông qua Biên bản ghi nhớ hợp tác này, ba bên sẽ triển khai nhiều chương trình đào tạo thực tiễn, kết nối doanh nghiệp và tạo điều kiện cho sinh viên tiếp cận công nghệ tiên tiến trong ngành. Đây không chỉ là cơ hội cho sinh viên có tay nghề vững chắc mà còn góp phần thúc đẩy sự phát triển bền vững của ngành năng lượng tái tạo tại Việt Nam. Một số hình ảnh được ghi nhận tại buổi thăm và ký kết BBGN:", "label": 1, "metadata": {"generation_model": "heuristic_rule_engine", "generation_method": "controlled_manipulation", "manipulation_type": "G4", "original_claim": "Trường Cao đẳng BCTech ký kết theo kế hoạch với các đối tác liên quan, vào thời gian ngày 27/02/2025, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "modified_claim": "Trường Cao đẳng BCTech ký kết theo kế hoạch với các đối tác liên quan, vào thời gian 2019, tại Bà Rịa - Vũng Tàu, kết quả: hoàn thành mục tiêu hợp tác và phát triển", "verification_status": "source_contradiction", "image_original": true, "quality_passed": true, "change_summary": "G4 - Đa thuộc tính: Thay đổi thực thể/đối tác từ 'Trường Cao đẳng Kỹ thuật Công nghệ Bà Rịa – Vũng Tàu (BCTech)' thành 'Trường Đại học Bách Khoa TP.HCM'; Đổi thời gian từ ngày 27/02/2025 thành 2019 (không vượt quá năm 2026)", "image_description": "Hình ảnh hiện trường khổ ngang phản ánh hoạt động thực tế liên quan đến bài viết.", "image_contextual_only": true, "split": "train"}}]}];
+
+    let filteredData = [...rawData];
+    let currentIndex = 0;
+    let currentFakeIndex = 0;
+
+    const CURRENT_RUN_ID = "20261020_191607";
+    const STORAGE_KEY = "fakenews_human_check_reviews_" + CURRENT_RUN_ID;
+
+    // Tự động dọn sạch tất cả các phiên đánh giá cũ trong localStorage của trình duyệt
+    try {
+      for (let i = localStorage.length - 1; i >= 0; i--) {
+        const k = localStorage.key(i);
+        if (k && (k.startsWith("fakenews_") || k.startsWith("fakenews_human_check_reviews")) && k !== STORAGE_KEY) {
+          localStorage.removeItem(k);
+        }
+      }
+    } catch (e) {
+      console.warn("Storage cleanup note:", e);
+    }
+
+    let reviews = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+
+    function resetAllReviews() {
+      if (confirm("Bạn có chắc chắn muốn xóa toàn bộ đánh giá đã duyệt / từ chối để bắt đầu lại sạch 100% không?")) {
+        reviews = {};
+        try {
+          localStorage.removeItem(STORAGE_KEY);
+        } catch(e) {}
+        updateStats();
+        renderCurrentArticle();
+      }
+    }
+
+    function updateStats() {
+      const totalSources = rawData.length;
+      let totalSamples = 0;
+      let realCount = 0;
+      let fakeCount = 0;
+
+      rawData.forEach(g => {
+        if (g.real) { totalSamples++; realCount++; }
+        if (g.fakes) { totalSamples += g.fakes.length; fakeCount += g.fakes.length; }
+      });
+
+      let approvedCount = 0;
+      let rejectedCount = 0;
+      Object.values(reviews).forEach(r => {
+        if (r.status === 'approved') approvedCount++;
+        if (r.status === 'rejected') rejectedCount++;
+      });
+
+      document.getElementById('stat-total-sources').innerText = totalSources;
+      document.getElementById('stat-total-samples').innerText = totalSamples;
+      document.getElementById('stat-real-count').innerText = realCount;
+      document.getElementById('stat-fake-count').innerText = fakeCount;
+      document.getElementById('stat-approved').innerText = approvedCount;
+      document.getElementById('stat-rejected').innerText = rejectedCount;
+    }
+
+    function setImageSource(imgId, src) {
+      const img = document.getElementById(imgId);
+      if (!img) return;
+      const box = img.parentElement;
+      const placeholder = box.querySelector('.image-placeholder');
+      if (placeholder) placeholder.remove();
+
+      img.style.display = 'block';
+      img.dataset.hasFailed = 'false';
+      img.src = src;
+    }
+
+    function handleImageError(imgEl) {
+      if (imgEl.dataset.hasFailed === 'true') return;
+      imgEl.dataset.hasFailed = 'true';
+      imgEl.style.display = 'none';
+
+      const box = imgEl.parentElement;
+      if (!box.querySelector('.image-placeholder')) {
+        const placeholder = document.createElement('div');
+        placeholder.className = 'image-placeholder';
+        placeholder.innerHTML = `
+          <svg style="width:36px;height:36px;fill:#64748b" viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+          <span style="font-weight:600;color:#94a3b8">Không tìm thấy hoặc tập tin ảnh 0 byte</span>
+          <span style="font-size:0.75rem;color:#64748b">${imgEl.getAttribute('src')}</span>
+        `;
+        box.appendChild(placeholder);
+      }
+    }
+
+    function renderCurrentArticle() {
+      if (filteredData.length === 0) {
+        document.getElementById('articleViewContainer').innerHTML = `
+          <div style="text-align:center;padding:80px 20px;color:var(--text-muted)">
+            <h3>Không tìm thấy bài báo nào phù hợp với bộ lọc</h3>
+            <p style="margin-top:8px">Vui lòng xóa ô tìm kiếm hoặc đổi điều kiện lọc.</p>
+          </div>
+        `;
+        document.getElementById('currentIdx').innerText = '0';
+        document.getElementById('totalFiltered').innerText = '0';
+        return;
+      }
+
+      if (currentIndex >= filteredData.length) currentIndex = 0;
+      if (currentIndex < 0) currentIndex = filteredData.length - 1;
+
+      const group = filteredData[currentIndex];
+      const real = group.real;
+      const fakes = group.fakes || [];
+
+      document.getElementById('currentIdx').innerText = currentIndex + 1;
+      document.getElementById('totalFiltered').innerText = filteredData.length;
+      document.getElementById('currentSourceId').innerText = group.source_id;
+
+      // Header Tags
+      const split = (real && real.metadata && real.metadata.split) || 'TRAIN';
+      document.getElementById('currentSplitBadge').innerText = split.toUpperCase();
+      document.getElementById('currentSourceIdBadge').innerText = group.source_id;
+
+      // Review Status
+      const rev = reviews[group.source_id] || { status: 'pending', note: '' };
+      const revBadge = document.getElementById('currentReviewBadge');
+      if (rev.status === 'approved') {
+        revBadge.innerText = '✓ ĐÃ PHÊ DUYỆT';
+        revBadge.style.background = '#059669';
+        revBadge.style.color = '#fff';
+      } else if (rev.status === 'rejected') {
+        revBadge.innerText = '✗ BỊ TỪ CHỐI';
+        revBadge.style.background = '#dc2626';
+        revBadge.style.color = '#fff';
+      } else {
+        revBadge.innerText = 'CHƯA DUYỆT';
+        revBadge.style.background = '#334155';
+        revBadge.style.color = '#e2e8f0';
+      }
+      document.getElementById('reviewNoteInput').value = rev.note || '';
+
+      // Title & Subtitle
+      const fullText = real ? real.text : '';
+      const title = fullText.split('.')[0] || 'Bài báo Good';
+      document.getElementById('currentArticleTitle').innerText = title;
+      document.getElementById('currentArticleSubtitle').innerText = `Chứa ${fakes.length} biến thể Fake được sinh tự động`;
+
+      // Real Column Details
+      if (real) {
+        document.getElementById('realSampleId').innerText = `ID: ${real.id}`;
+        setImageSource('realImg', real.image_path);
+        document.getElementById('realClaimText').innerText = (real.metadata && real.metadata.original_claim) || 'Không có phát biểu';
+        document.getElementById('realArticleText').innerText = real.text;
+      }
+
+      // Fake Column Tabs
+      const tabsContainer = document.getElementById('fakeTabsContainer');
+      tabsContainer.innerHTML = '';
+      if (currentFakeIndex >= fakes.length) currentFakeIndex = 0;
+
+      fakes.forEach((fk, idx) => {
+        const btn = document.createElement('button');
+        btn.className = `tab-btn ${idx === currentFakeIndex ? 'active' : ''}`;
+        const mtype = (fk.metadata && fk.metadata.manipulation_type) || `Fake ${idx+1}`;
+        btn.innerText = `${mtype} (Mẫu ${idx+1})`;
+        btn.onclick = () => {
+          currentFakeIndex = idx;
+          renderCurrentFake();
+        };
+        tabsContainer.appendChild(btn);
+      });
+
+      renderCurrentFake();
+    }
+
+    function renderCurrentFake() {
+      const group = filteredData[currentIndex];
+      const fakes = group.fakes || [];
+      if (fakes.length === 0) return;
+
+      const fk = fakes[currentFakeIndex];
+      const meta = fk.metadata || {};
+
+      document.getElementById('fakeSampleId').innerText = `ID: ${fk.id}`;
+      setImageSource('fakeImg', fk.image_path);
+      document.getElementById('fakeClaimText').innerText = meta.modified_claim || 'Không có';
+      document.getElementById('fakeChangeSummary').innerText = `Tóm tắt thay đổi: ${meta.change_summary || 'Sinh theo biến thể ' + meta.manipulation_type}`;
+
+      // Badges
+      const mtype = meta.manipulation_type || 'G3';
+      const mbadge = document.getElementById('fakeManipBadge');
+      mbadge.className = `badge badge-${mtype.toLowerCase()}`;
+      mbadge.innerText = `${mtype} - ${getGroupDesc(mtype)}`;
+
+      const vbadge = document.getElementById('fakeVerifBadge');
+      const vstatus = meta.verification_status || 'source_contradiction';
+      vbadge.className = vstatus === 'verified_contradiction' ? 'badge badge-verified' : 'badge badge-source';
+      vbadge.innerText = vstatus;
+
+      document.getElementById('fakeArticleText').innerText = fk.text;
+
+      // Update active tab buttons
+      const tabBtns = document.querySelectorAll('#fakeTabsContainer .tab-btn');
+      tabBtns.forEach((b, i) => {
+        if (i === currentFakeIndex) b.classList.add('active');
+        else b.classList.remove('active');
+      });
+    }
+
+    function getGroupDesc(g) {
+      switch(g) {
+        case 'G1': return 'Số liệu & Thời gian';
+        case 'G2': return 'Thực thể & Đối tác';
+        case 'G3': return 'Đảo ngược sự kiện';
+        case 'G4': return 'Đa phát biểu';
+        default: return 'Biến đổi';
+      }
+    }
+
+    function openZoom(src) {
+      if (!src) return;
+      document.getElementById('modalImg').src = src;
+      document.getElementById('zoomModal').style.display = 'flex';
+    }
+
+    function prevArticle() {
+      currentIndex--;
+      currentFakeIndex = 0;
+      renderCurrentArticle();
+    }
+
+    function nextArticle() {
+      currentIndex++;
+      currentFakeIndex = 0;
+      renderCurrentArticle();
+    }
+
+    function jumpToRandom() {
+      if (filteredData.length > 0) {
+        currentIndex = Math.floor(Math.random() * filteredData.length);
+        currentFakeIndex = 0;
+        renderCurrentArticle();
+      }
+    }
+
+    function markApproval(status) {
+      const group = filteredData[currentIndex];
+      if (!group) return;
+      const note = document.getElementById('reviewNoteInput').value.trim();
+
+      // Nếu bấm lại cùng một trạng thái đã chọn (ví dụ: đang 'rejected' bấm lại 'rejected') -> Hoàn tác về Chưa duyệt
+      if (reviews[group.source_id] && reviews[group.source_id].status === status) {
+        delete reviews[group.source_id];
+      } else {
+        reviews[group.source_id] = {
+          source_id: group.source_id,
+          status: status,
+          note: note,
+          reviewed_at: new Date().toISOString()
+        };
+      }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(reviews));
+      updateStats();
+      renderCurrentArticle();
+    }
+
+    function saveNote() {
+      const group = filteredData[currentIndex];
+      if (!group) return;
+      const note = document.getElementById('reviewNoteInput').value.trim();
+      if (!reviews[group.source_id]) {
+        reviews[group.source_id] = { source_id: group.source_id, status: 'pending', note: note };
+      } else {
+        reviews[group.source_id].note = note;
+      }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(reviews));
+    }
+
+    function handleFilter() {
+      const groupVal = document.getElementById('groupFilter').value;
+      const splitVal = document.getElementById('splitFilter').value;
+      const statusVal = document.getElementById('statusFilter').value;
+      const query = document.getElementById('searchInput').value.toLowerCase().trim();
+
+      filteredData = rawData.filter(g => {
+        if (groupVal !== 'ALL') {
+          const hasGroup = g.fakes.some(fk => (fk.metadata && fk.metadata.manipulation_type) === groupVal);
+          if (!hasGroup) return false;
+        }
+
+        if (splitVal !== 'ALL') {
+          const split = (g.real && g.real.metadata && g.real.metadata.split) || 'train';
+          if (split !== splitVal) return false;
+        }
+
+        if (statusVal !== 'ALL') {
+          const rev = reviews[g.source_id] || { status: 'pending' };
+          if (rev.status !== statusVal) return false;
+        }
+
+        if (query) {
+          const textToSearch = [
+            g.source_id,
+            g.real ? g.real.text : '',
+            ...(g.fakes.map(f => f.text + ' ' + (f.metadata ? f.metadata.change_summary : '')))
+          ].join(' ').toLowerCase();
+          if (!textToSearch.includes(query)) return false;
+        }
+
+        return true;
+      });
+
+      currentIndex = 0;
+      currentFakeIndex = 0;
+      renderCurrentArticle();
+    }
+
+    function handleSearch() {
+      handleFilter();
+    }
+
+    function exportReviewReport() {
+      const report = {
+        timestamp: new Date().toISOString(),
+        total_sources: rawData.length,
+        reviews: reviews
+      };
+      const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `fake_news_human_check_report_${new Date().toISOString().slice(0,10)}.json`;
+      a.click();
+    }
+
+    // KEYBOARD SHORTCUTS
+    document.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      if (e.key === 'ArrowRight') { nextArticle(); }
+      else if (e.key === 'ArrowLeft') { prevArticle(); }
+      else if (e.key === '1') { markApproval('approved'); }
+      else if (e.key === '2') { markApproval('rejected'); }
+    });
+
+    // INIT
+    updateStats();
+    renderCurrentArticle();
+  </script>
+</body>
+</html>

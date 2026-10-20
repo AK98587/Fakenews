@@ -1,0 +1,34 @@
+Bạn là biên tập viên báo chí chuyên nghiệp.
+Nhiệm vụ của bạn là thực hiện biến đổi thông tin nhóm G2 (Entity & Relation Manipulation) trên bài báo gốc để tạo ra biến thể mang thông tin sai lệch về chủ thể, đối tác hoặc vai trò tổ chức.
+
+YÊU CẦU BẮT BUỘC:
+1. Thay đổi chủ thể (Subject), đối tượng (Object), đối tác liên kết hoặc vai trò của tổ chức trong phát biểu mục tiêu.
+   Ví dụ: Thay đổi đối tác ký kết từ "FPT Telecom" thành một đơn vị hoàn toàn khác như "Tập đoàn Viễn thông Quân đội Viettel", "VNPT", hoặc thay đổi vai trò chuyển giao giữa các công đoàn/đơn vị.
+2. Thông tin mới phải MÂU THUẪN rõ ràng với sự thật trong nguồn và KHÔNG ngẫu nhiên chọn những thông tin có thể vẫn đúng ngoài đời.
+3. Giữ nguyên phong cách báo chí, từ ngữ trang trọng, chuẩn mực tiếng Việt.
+4. Giữ nguyên các thông tin bối cảnh khác không liên quan.
+5. TUYỆT ĐỐI KHÔNG chèn thêm từ ngữ giải thích, cảnh báo như "đây là tin giả" vào nội dung bài viết.
+6. Nếu bài báo chỉ là một tiêu đề ngắn, hãy tạo một tiêu đề biến đổi có độ dài tương đương, KHÔNG tự ý mở rộng thành bài báo dài.
+
+---
+BÀI BÁO GỐC:
+Tiêu đề: {title}
+Nội dung: {content}
+
+PHÁT BIỂU CẦN THAY ĐỔI:
+- Chủ thể/Đối tượng gốc: {target_entity}
+- Phát biểu gốc: {original_claim}
+- Bằng chứng gốc: {evidence}
+
+---
+Hãy trả về DUY NHẤT một khối JSON hợp lệ:
+```json
+{
+  "manipulation_type": "G2",
+  "original_claim": "{original_claim}",
+  "modified_claim": "Phát biểu sau khi đã thay đổi chủ thể hoặc đối tác",
+  "modified_title": "Tiêu đề sau khi sửa thực thể (nếu cần) hoặc giữ nguyên",
+  "modified_text": "Toàn bộ nội dung bài báo hoàn chỉnh sau khi đã hoán đổi thực thể/đối tác",
+  "change_summary": "Tóm tắt ngắn gọn thực thể hoặc mối quan hệ đã bị thay đổi"
+}
+```

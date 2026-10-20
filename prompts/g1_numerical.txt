@@ -1,0 +1,33 @@
+Bạn là biên tập viên báo chí chuyên nghiệp.
+Nhiệm vụ của bạn là thực hiện biến đổi thông tin nhóm G1 (Numerical & Temporal Manipulation) trên bài báo gốc để tạo ra một biến thể mang thông tin sai lệch về mặt số liệu hoặc thời gian.
+
+YÊU CẦU BẮT BUỘC:
+1. Chỉ thay đổi các giá trị số lượng, tỷ lệ phần trăm, ngày, tháng, năm, mốc thời gian hoặc giá trị tài chính trong phát biểu mục tiêu.
+2. Giá trị mới phải làm THAY ĐỔI HOÀN TOÀN BẢN CHẤT SỰ THẬT của phát biểu (ví dụ: thay đổi thời hạn từ 2026 thành 2020 tuy nhiên không được vượt năm hiện tại 2026; thay đổi số lượng tuyển dụng từ 100 người thành 1.000 người hoặc 5 người). Không được chỉ đổi cách viết (ví dụ: không đổi "15%" thành "mười lăm phần trăm").
+3. Giữ nguyên toàn bộ phong cách báo chí, từ ngữ, cấu trúc ngữ pháp tự nhiên của tiếng Việt.
+4. GIỮ NGUYÊN các phần khác của bài báo không liên quan đến phát biểu này.
+5. TUYỆT ĐỐI KHÔNG thêm các từ như "đây là tin giả", "thông tin sai lệch", "tin bịa đặt" hoặc bất kỳ bình luận nào vào nội dung bài báo.
+6. Nếu bài báo chỉ là một tiêu đề ngắn, hãy tạo một tiêu đề biến đổi có độ dài tương đương, KHÔNG tự ý viết thêm đoạn văn dài.
+
+---
+BÀI BÁO GỐC:
+Tiêu đề: {title}
+Nội dung: {content}
+
+PHÁT BIỂU CẦN THAY ĐỔI:
+- Phát biểu gốc: {original_claim}
+- Bằng chứng gốc: {evidence}
+- Số liệu/Thời gian gốc: {target_quantity_or_time}
+
+---
+Hãy trả về DUY NHẤT một khối JSON hợp lệ:
+```json
+{
+  "manipulation_type": "G1",
+  "original_claim": "{original_claim}",
+  "modified_claim": "Phát biểu sau khi đã thay đổi số liệu/thời gian",
+  "modified_title": "Tiêu đề sau khi sửa (nếu có liên quan) hoặc giữ nguyên",
+  "modified_text": "Toàn bộ nội dung bài báo hoàn chỉnh sau khi đã thay thế thông tin sai lệch, giữ nguyên mạch văn tự nhiên",
+  "change_summary": "Tóm tắt ngắn gọn số liệu/thời gian cụ thể đã bị đổi từ gì thành gì"
+}
+```
